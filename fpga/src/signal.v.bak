@@ -1,0 +1,231 @@
+/**
+ * 信号处理模块
+ */
+
+/** 异步信号同步器
+ * clk: 时钟信号
+ * rstn: 复位信号，低电平有效
+ * signal: 输入的异步信号
+ * signal_sync: 输出的同步信号
+ */
+module SignalSync
+#(
+    parameter INITIAL_VALUE = 0
+)
+(
+    input clk, rstn, signal,
+    output signal_sync
+);
+    reg signal_buff1, signal_buff2;
+    always @(posedge clk or negedge rstn)
+    begin
+        if (!rstn)
+        begin
+            signal_buff1 <= INITIAL_VALUE;
+            signal_buff2 <= INITIAL_VALUE;
+        end
+        else
+        begin
+            signal_buff1 <= signal;
+            signal_buff2 <= signal_buff1;
+        end
+    end
+
+    assign signal_sync = signal_buff2;
+endmodule
+
+/** 上升沿检测器
+ * clk: 时钟信号
+ * rstn: 复位信号，低电平有效
+ * signal_sync: 输入的同步信号。模块内部为了避免延迟没有进行二次同步，因此要求输入信号已经过同步处理
+ * signal_posedge: 输出的上升沿检测信号，当signal_sync从0变为1时，signal_posedge为1
+ */
+module PosedgeDetector
+(
+    input clk, rstn, signal_sync,
+    output signal_posedge
+);
+    reg signal_sync_prev;
+    always @(posedge clk or negedge rstn)
+    begin
+        if (!rstn)
+        begin
+            signal_sync_prev <= 1'b0;
+        end
+        else
+        begin
+            signal_sync_prev <= signal_sync;
+        end
+    end
+
+    assign signal_posedge = signal_sync & ~signal_sync_prev;
+endmodule
+
+/** 下降沿检测器
+ * clk: 时钟信号
+ * rstn: 复位信号，低电平有效
+ * signal_sync: 输入的同步信号。模块内部为了避免延迟没有进行二次同步，因此要求输入信号已经过同步处理
+ * signal_negedge: 输出的下降沿检测信号，当signal_sync从1变为0时，signal_negedge为1
+ */
+module NegedgeDetector
+(
+    input clk, rstn, signal_sync,
+    output signal_negedge
+);
+    reg signal_sync_prev;
+    always @(posedge clk or negedge rstn)
+    begin
+        if (!rstn)
+        begin
+            signal_sync_prev <= 1'b0;
+        end
+        else
+        begin
+            signal_sync_prev <= signal_sync;
+        end
+    end
+
+    assign signal_negedge = ~signal_sync & signal_sync_prev;
+endmodule
+
+/**
+ * 频率计
+ * 输出频率为 n / m * CLK_FREQ
+ * 输出在done上跳变时已锁存
+ */
+module FreqMeasure
+#(
+    parameter CLK_FREQ = 100_000_000
+    parameter GATE_TIME = 100_000  // us
+)
+(
+    input clk, rstn, signal,
+    output done,
+    output [31:0] m, n
+);
+    reg [31:0] r_m, r_n;
+    reg r_done;
+
+    localparam GATE_OFF = 2'b00, GATE_ON = 2'b01, WAIT_SYNC = 2'b10, CALC = 2'b11;
+
+    reg [1:0] stn;
+    wire [1:0] stc;
+    FSM #(
+        .N(3),
+        .INITIAL_STATE(GATE_OFF)
+    ) fsm(
+        .clk(clk),
+        .rstn(rstn),
+        .stn(stn),
+        .stc(stc)
+    );
+
+    wire signal_sync;
+    SignalSync sync(
+        .clk(clk),
+        .rstn(rstn),
+        .signal(signal),
+        .signal_sync(signal_sync)
+    );
+
+    wire signal_posedge;
+    PosedgeDetector pdt(
+        .clk(clk),
+        .rstn(rstn),
+        .signal_sync(signal_sync),
+        .signal_posedge(signal_posedge)
+    );
+
+    wire signal_negedge;
+    NegedgeDetector ndt(
+        .clk(clk),
+        .rstn(rstn),
+        .signal_sync(signal_sync),
+        .signal_negedge(signal_negedge)
+    );
+
+    // 门限时长
+    localparam GATE_CNT = CLK_FREQ / 1_000_000 * GATE_TIME;
+    reg d_gate;
+    wire d_gate_carry;
+    CTU #(GATE_CNT) ctu(
+        .clk(clk),
+        .rstn(d_gate),
+        .count(),
+        .carry(d_gate_carry)
+    );
+
+    always @(*)
+    begin
+        case (stc)
+            GATE_OFF: stn = signal_posedge ? GATE_ON : GATE_OFF;
+            GATE_ON: stn = d_gate_carry ? WAIT_SYNC : GATE_ON;
+            WAIT_SYNC: stn = signal_posedge ? CALC : WAIT_SYNC;
+            CALC: stn = GATE_OFF;
+            default: stn = GATE_OFF;
+        endcase
+    end
+
+    reg [31:0] l_m, l_n;
+    always @(posedge clk or negedge rstn)
+    begin
+        l_m <= l_m;
+        l_n <= l_n;
+        if (!rstn)
+        begin
+            l_m <= 32'd0;
+            l_n <= 32'd0;
+            r_m <= 32'd0;
+            r_n <= 32'd0;
+            r_done <= 1'b0;
+            d_gate <= 1'b0;
+        end
+        else
+        begin
+            r_done <= 1'b0;
+            case (stc)
+                GATE_OFF:
+                begin
+                    r_m <= 32'd0;
+                    r_n <= 32'd0;
+                    d_gate <= 1'b0;
+                end
+
+                GATE_ON:
+                begin
+                    r_m <= r_m + 32'd1;
+                    r_n <= r_n + (signal_posedge ? 32'd1 : 32'd0);
+                    d_gate <= 1'b1;
+                end
+
+                WAIT_SYNC:
+                begin
+                    r_m <= r_m + 32'd1;
+                    r_n <= r_n + (signal_posedge ? 32'd1 : 32'd0);
+                    d_gate <= 1'b0;
+                end
+
+                CALC:
+                begin
+                    l_m <= r_m;
+                    l_n <= r_n;
+                    r_m <= r_m;
+                    r_n <= r_n;
+                    d_gate <= 1'b0;
+                    r_done <= 1'b1;
+                end
+
+                default:
+                begin
+                    r_m <= 32'd0;
+                    r_n <= 32'd0;
+                    d_gate <= 1'b0;
+                end
+            endcase
+        end
+    end
+
+    assign m = l_m;
+    assign n = l_n;
+    assign done = r_done;
+endmodule

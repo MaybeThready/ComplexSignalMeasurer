@@ -1,0 +1,26 @@
+# Keil/MDK build outputs
+mcu/keil/Objects
+mcu/test_ui_config.h
+mcu/test_ui_config.c
+
+# General build artifacts
+**/*.o
+**/*.obj
+**/*.elf
+**/*.axf
+**/*.bin
+**/*.hex
+**/*.map
+**/*.d
+**/*.lst
+**/*.log
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Quartus Files
+fpga/db
+fpga/incremental_db
+fpga/output_files
+fpga/simulation
