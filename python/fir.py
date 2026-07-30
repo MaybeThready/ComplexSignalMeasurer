@@ -8,27 +8,33 @@ from scipy.signal import freqz, remez
 SAMPLE_RATE_HZ = 10_240_000
 DECIMATION_FACTOR = 10
 OUTPUT_SAMPLE_RATE_HZ = SAMPLE_RATE_HZ // DECIMATION_FACTOR
-PASSBAND_EDGE_HZ = 500_000
-STOPBAND_EDGE_HZ = 1_000_000
-PASSBAND_RIPPLE_DB = 0.1
-STOPBAND_ATTENUATION_DB = 80.0
+PASSBAND_EDGE_HZ = 600_000
+STOPBAND_EDGE_HZ = 900_000
+PASSBAND_RIPPLE_DB = 0.002
+STOPBAND_ATTENUATION_DB = 115.0
 
 # This is a project-specific decimator.  The measured signal is limited to
-# 0..500 kHz and the known out-of-band interferers start at 1 MHz.  It is not
-# a general-purpose anti-alias filter for arbitrary energy in 524 kHz..1 MHz:
-# that band can fold into 0..500 kHz after decimation to 1.024 MS/s.
+# 0..500 kHz, no input is accepted in 500 kHz..1 MHz, and the known
+# out-of-band interferers start above 1 MHz.  The 600 kHz passband edge below
+# deliberately provides margin above the highest valid signal.  Since the
+# decimated Nyquist frequency is 512 kHz, frequencies in 512..600 kHz would
+# fold into the output and therefore still rely on that input-spectrum
+# guarantee.
 #
 # Search for the shortest odd, symmetric implementation that meets the
 # requirements after coefficient quantization.  The 100 MHz FIR clock gives
 # enough processing clocks per ADC sample for the FIR II core to time-share
 # the Cyclone IV DSP blocks.
-DESIGN_PASSBAND_RIPPLE_DB = 0.1
-DESIGN_STOPBAND_ATTENUATION_DB = 82.0
-MAX_TAPS = 149
+DESIGN_PASSBAND_RIPPLE_DB = 0.002
+DESIGN_STOPBAND_ATTENUATION_DB = 115.0
+MAX_TAPS = 255
 
-# Cyclone IV FIR II coefficient format
-COEFFICIENT_WIDTH = 18
-COEFFICIENT_FRACTIONAL_WIDTH = 19
+# The fixed coefficients are signed Q1.23.  FIR Compiler II derives a 24-bit
+# coefficient datapath from this format, which is supported by the Cyclone IV
+# E implementation and avoids making coefficient quantization the stopband
+# floor.
+COEFFICIENT_FRACTIONAL_WIDTH = 23
+COEFFICIENT_TOTAL_WIDTH = COEFFICIENT_FRACTIONAL_WIDTH + 1
 FREQ_RESPONSE_POINTS = 262_144
 OUTPUT_FILE = Path(__file__).resolve().parents[1] / "fir_coef.txt"
 
@@ -51,10 +57,10 @@ def measure_response(coefficients: np.ndarray) -> tuple[float, float, float]:
 def quantize_coefficients(
     coefficients: np.ndarray,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Quantize coefficients into signed 18-bit integers with 19 frac bits."""
+    """Quantize coefficients into signed Q1.23 fixed-point values."""
     scale = 1 << COEFFICIENT_FRACTIONAL_WIDTH
-    minimum = -(1 << (COEFFICIENT_WIDTH - 1))
-    maximum = (1 << (COEFFICIENT_WIDTH - 1)) - 1
+    minimum = -(1 << (COEFFICIENT_TOTAL_WIDTH - 1))
+    maximum = (1 << (COEFFICIENT_TOTAL_WIDTH - 1)) - 1
     rounded = np.rint(coefficients * scale)
     if np.any(rounded < minimum) or np.any(rounded > maximum):
         raise ValueError(
@@ -123,7 +129,7 @@ def main() -> None:
         OUTPUT_FILE,
         quantized_coefficients[np.newaxis, :],
         # 17 significant digits preserve every binary64 value exactly.  This
-        # matters because each Q19 coefficient must reach FIR Compiler on the
+        # matters because each Q23 coefficient must reach FIR Compiler on the
         # intended integer boundary instead of being truncated by one LSB.
         fmt="%.17g",
         delimiter=", ",
@@ -135,7 +141,7 @@ def main() -> None:
     print(f"Passband edge         : {PASSBAND_EDGE_HZ / 1e3:.3f} kHz")
     print(f"Stopband edge         : {STOPBAND_EDGE_HZ / 1e3:.3f} kHz")
     print(f"Number of taps        : {integer_coefficients.size}")
-    print(f"Coefficient width     : {COEFFICIENT_WIDTH} bits")
+    print(f"Coefficient width     : {COEFFICIENT_TOTAL_WIDTH} bits")
     print(f"Coefficient frac bits : {COEFFICIENT_FRACTIONAL_WIDTH}")
     print(f"Quantized ripple      : {ripple_db:.6f} dB")
     print(f"Quantized pass peak   : {passband_max_db:.6f} dB")

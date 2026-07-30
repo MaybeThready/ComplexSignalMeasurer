@@ -9,11 +9,11 @@ use work.auk_dspip_math_pkg_hpfir.all;
 entity fir_decim10_ast is
   generic (
         INWIDTH             : integer := 12;
-        OUT_WIDTH_UNTRIMMED : integer := 39;
+        OUT_WIDTH_UNTRIMMED : integer := 44;
         BANKINWIDTH         : integer := 0;
-        REM_LSB_BIT_g       : integer := 19;
+        REM_LSB_BIT_g       : integer := 23;
         REM_LSB_TYPE_g      : string := "round";
-        REM_MSB_BIT_g       : integer := 8;
+        REM_MSB_BIT_g       : integer := 9;
         REM_MSB_TYPE_g      : string := "sat";
         PHYSCHANIN          : integer := 1;
         PHYSCHANOUT         : integer := 1;
@@ -197,7 +197,7 @@ real_passthrough : if COMPLEX_CONST = 1 generate
         xIn_0                : in std_logic_vector(12 - 1 downto 0);
         xOut_v               : out std_logic_vector(0 downto 0);
         xOut_c               : out std_logic_vector(7 downto 0);
-        xOut_0              : out std_logic_vector(39- 1 downto 0);
+        xOut_0              : out std_logic_vector(44- 1 downto 0);
         clk                  : in std_logic;
         areset               : in std_logic
         );
@@ -222,7 +222,7 @@ end component fir_decim10_rtl_core;
             xIn_0     => data_in_core((0 + 12) * 0 + 12 - 1 downto (0 + 12) * 0),
             xOut_v    => core_out_valid_core,
             xOut_c    => core_out_channel_core,
-            xOut_0   => core_out_core(39* 0 + 39- 1 downto 39* 0),
+            xOut_0   => core_out_core(44* 0 + 44- 1 downto 44* 0),
             clk       => clk,
             areset    => reset_fir
         );

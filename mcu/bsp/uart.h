@@ -17,7 +17,7 @@
 typedef void (*UartReceiveCallbackFunc)(uint8_t data);
 
 // UART实例
-#define UART_INST DEFAULT_UART_INST
+#define UART_INST TJC_UART_INST
 
 // UART接收回调函数指针，用户可以将其设置为一个函数来处理接收到的数据
 extern UartReceiveCallbackFunc uart_recieve_callback;
@@ -68,4 +68,4 @@ void uart_send_unum(uint32_t num, bool blocking);
  */
 void uart_send_num(int32_t num, bool blocking);
 
-void DEFAULT_UART_INST_IRQHandler();
+void TJC_UART_INST_IRQHandler();

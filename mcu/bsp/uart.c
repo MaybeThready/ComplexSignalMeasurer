@@ -5,7 +5,7 @@ UartReceiveCallbackFunc uart_recieve_callback = NULL;
 void init_uart()
 {
     DL_UART_enableInterrupt(UART_INST, DL_UART_MAIN_INTERRUPT_RX);
-    NVIC_EnableIRQ(DEFAULT_UART_INST_INT_IRQN);
+    NVIC_EnableIRQ(TJC_UART_INST_INT_IRQN);
 }
 
 void uart_send_byte(uint8_t data, bool blocking)
@@ -69,7 +69,7 @@ void uart_send_num(int32_t num, bool blocking)
     uart_send_unum((uint32_t)num, blocking);
 }
 
-void DEFAULT_UART_INST_IRQHandler()
+void TJC_UART_INST_IRQHandler()
 {
     switch (DL_UART_Main_getPendingInterrupt(UART_INST))
     {

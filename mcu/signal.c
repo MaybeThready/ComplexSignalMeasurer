@@ -1,8 +1,26 @@
 #include "signal.h"
 #include "arm_math.h"
+#include "calibration.h"
 
 #define SAMPLE_RATE (1024.0f) // kHz
 #define NOISE_GATE (3.0f)
+
+static float calibrate_harmonic_peak_mv(float raw_peak_mv, float freq_khz)
+{
+    /*
+     * FFT得到的是峰值；校准模型输入的是Vpp。
+     * 因此先乘2变为Vpp，校准后再除2恢复峰值。
+     */
+    const float measured_vpp_mv = 2.0f * raw_peak_mv;
+
+    if (!cb_calibration_in_range(measured_vpp_mv, freq_khz))
+    {
+        /* 严格模式：超出标定范围时保留原值 */
+        return raw_peak_mv;
+    }
+
+    return 0.5f * cb_calibrate_vpp_mv(measured_vpp_mv, freq_khz);
+}
 
 uint16_t signal_adc_code[N_SAMPLES] = { 0 };
 float signal_samples[N_SAMPLES] = { 0 };
@@ -73,6 +91,7 @@ void signal_update_result()
     for (size_t i = 0; i < N_SAMPLES; i++)
     {
         tmp = signal_adc_code[i] / 4095.0f * MAX_VPP + MIN_INPUT_VAL;
+        tmp = tmp < MIN_INPUT_VAL ? MIN_INPUT_VAL : (tmp > MAX_INPUT_VAL ? MAX_INPUT_VAL : tmp);
         signal_samples[i] = tmp;
         signal_windowed_samples[i] = tmp * hanning_window[i];
     }
@@ -138,8 +157,15 @@ void signal_update_result()
             signal_harmonics[i].order = (uint8_t)round(harmonic_freqs[i] / base_freq);
             // signal_harmonics[i].freq = base_freq * signal_harmonics[i].order;
             signal_harmonics[i].freq = harmonic_freqs[i];
-            signal_harmonics[i].amp = harmonic_amp[i];
-            signal_vrms += signal_harmonics[i].amp * signal_harmonics[i].amp / 2.0f;
+
+            signal_harmonics[i].amp =
+                calibrate_harmonic_peak_mv(
+                    harmonic_amp[i],
+                    harmonic_freqs[i]);
+
+            signal_vrms +=
+                signal_harmonics[i].amp *
+                signal_harmonics[i].amp / 2.0f;
         }
         else
         {
@@ -151,7 +177,7 @@ void signal_update_result()
 
 void signal_generate_wave(uint8_t period_cnt)
 {
-    float base_freq = signal_harmonics[0].freq;  // kHz
+    float base_freq = signal_harmonics[0].freq > 0.0f ? signal_harmonics[0].freq : 1.0f;  // kHz
     float wave_period = 1.0f / base_freq;  // ms
     float time_step = period_cnt * wave_period / (UART_X_PIXELS - 1);  // 绘制N个点只需步进N-1次
 
@@ -170,9 +196,6 @@ void signal_generate_wave(uint8_t period_cnt)
             }
         }
 
-        tmp = (tmp - MIN_INPUT_VAL) / MAX_VPP * 254.0f;
-        tmp = tmp < 0.0f ? 0.0f : (tmp > 254.0f ? 254.0f : tmp);
-
         if (tmp > signal_vmax)
         {
             signal_vmax = tmp;
@@ -182,6 +205,8 @@ void signal_generate_wave(uint8_t period_cnt)
             signal_vmin = tmp;
         }
 
+        tmp = (tmp - MIN_INPUT_VAL) / MAX_VPP * 254.0f;
+        tmp = tmp < 0.0f ? 0.0f : (tmp > 254.0f ? 254.0f : tmp);
         signal_uart_wave[i] = (uint8_t)tmp;
         t += time_step;
     }

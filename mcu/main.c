@@ -1,9 +1,9 @@
 #include "ti_msp_dl_config.h"
 #include "bsp/msp_sys.h"
-#include "bsp/oled/oled.h"
-#include "bsp/keyboard.h"
+// #include "bsp/oled/oled.h"
+// #include "bsp/keyboard.h"
 #include "bsp/uart.h"
-#include "ui_config.h"
+// #include "ui_config.h"
 #include "signal.h"
 #include "tjc.h"
 #include <stdio.h>
@@ -73,6 +73,7 @@ void uart_update()
         char buffer[40] = { 0 };
         if (is_wave_mode)
         {
+            // signal_generate_wave(period_cnt);
             snprintf(buffer, 40, "main.t2.txt=\"%.3fmV\"", signal_vpp);
             tjc_send_string(buffer);
 
@@ -189,10 +190,10 @@ int main()
 {
     SYSCFG_DL_init();
     init_sys();
-    init_oled();
-    init_keyboard();
+    // init_oled();
+    // init_keyboard();
     init_uart();
-    init_app_ui();
+    // init_app_ui();
 
     uart_recieve_callback = tjc_parse_uart;
 
@@ -214,8 +215,8 @@ int main()
             int_dma_done();
         }
         uart_update();
-        keyboard_update();
-        app_ui_update();
+        // keyboard_update();
+        // app_ui_update();
     }
 
     return 0;

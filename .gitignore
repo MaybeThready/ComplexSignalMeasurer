@@ -26,3 +26,5 @@ fpga/output_files
 fpga/simulation
 
 usart_sig/
+cb_output/
+*.xlsx
