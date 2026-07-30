@@ -1,0 +1,1630 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EnsembleReport
+ name="fir_decim10"
+ kind="altera_fir_compiler_ii"
+ version="25.1"
+ fabric="QSYS">
+ <!-- Format version 25.1 1129 (Future versions may contain additional information.) -->
+ <!-- 2026.07.31.00:32:53 -->
+ <!-- A collection of modules and connections -->
+ <parameter name="filterType">
+  <type>java.lang.String</type>
+  <value>decim</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="interpFactor">
+  <type>int</type>
+  <value>1</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="decimFactor">
+  <type>int</type>
+  <value>10</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="symmetryMode">
+  <type>java.lang.String</type>
+  <value>sym</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="L_bandsFilter">
+  <type>java.lang.String</type>
+  <value>1</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="inputChannelNum">
+  <type>int</type>
+  <value>1</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="clockRate">
+  <type>java.lang.String</type>
+  <value>100</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="clockSlack">
+  <type>int</type>
+  <value>0</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="inputRate">
+  <type>java.lang.String</type>
+  <value>10.24</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="coeffReload">
+  <type>boolean</type>
+  <value>false</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="baseAddress">
+  <type>int</type>
+  <value>0</value>
+  <derived>false</derived>
+  <enabled>false</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="readWriteMode">
+  <type>java.lang.String</type>
+  <value>read_write</value>
+  <derived>false</derived>
+  <enabled>false</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="coefficientReadback">
+  <type>boolean</type>
+  <value>false</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="coefficientWriteable">
+  <type>boolean</type>
+  <value>false</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="busDataWidth">
+  <type>int</type>
+  <value>32</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="backPressure">
+  <type>boolean</type>
+  <value>false</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="deviceFamily">
+  <type>java.lang.String</type>
+  <value>CYCLONEIVE</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+  <sysinfo_type>DEVICE_FAMILY</sysinfo_type>
+ </parameter>
+ <parameter name="speedGrade">
+  <type>java.lang.String</type>
+  <value>medium</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="delayRAMBlockThreshold">
+  <type>int</type>
+  <value>20</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="dualMemDistRAMThreshold">
+  <type>int</type>
+  <value>1280</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="mRAMThreshold">
+  <type>int</type>
+  <value>1000000</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="hardMultiplierThreshold">
+  <type>int</type>
+  <value>-1</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="reconfigurable">
+  <type>boolean</type>
+  <value>false</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="num_modes">
+  <type>int</type>
+  <value>2</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="ModeWidth">
+  <type>int</type>
+  <value>0</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="reconfigurable_list">
+  <type>java.lang.String</type>
+  <value>0</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="MODE_STRING">
+  <type>java.lang.String</type>
+  <value>None Set</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="modeFormatted">
+  <type>java.lang.String</type>
+  <value>--</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="channelModes">
+  <type>java.lang.String</type>
+  <value>0,1,2,3</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="inputType">
+  <type>java.lang.String</type>
+  <value>int</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="inputBitWidth">
+  <type>int</type>
+  <value>12</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="inputFracBitWidth">
+  <type>int</type>
+  <value>0</value>
+  <derived>false</derived>
+  <enabled>false</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="coeffSetRealValue">
+  <type>java.lang.String</type>
+  <value>0.0001010894775390625, 0.0002155303955078125, 0.0003948211669921875, 0.0006122589111328125, 0.000820159912109375, 0.00095367431640625, 0.0009288787841796875, 0.000667572021484375, 0.0001220703125, -0.0006999969482421875, -0.001712799072265625, -0.00274658203125, -0.0035610198974609375, -0.0038852691650390625, -0.00347137451171875, -0.0021762847900390625, -1.33514404296875e-05, 0.0027923583984375, 0.0057926177978515625, 0.00836944580078125, 0.009822845458984375, 0.0095157623291015625, 0.007022857666015625, 0.002292633056640625, -0.0042552947998046875, -0.011697769165039062, -0.018678665161132812, -0.02356719970703125, -0.024717330932617188, -0.020742416381835938, -0.010812759399414062, 0.005123138427734375, 0.026231765747070312, 0.050811767578125, 0.07647705078125, 0.10046768188476562, 0.12002372741699219, 0.13280868530273438, 0.13725471496582031, 0.13280868530273438, 0.12002372741699219, 0.10046768188476562, 0.07647705078125, 0.050811767578125, 0.026231765747070312, 0.005123138427734375, -0.010812759399414062, -0.020742416381835938, -0.024717330932617188, -0.02356719970703125, -0.018678665161132812, -0.011697769165039062, -0.0042552947998046875, 0.002292633056640625, 0.007022857666015625, 0.0095157623291015625, 0.009822845458984375, 0.00836944580078125, 0.0057926177978515625, 0.0027923583984375, -1.33514404296875e-05, -0.0021762847900390625, -0.00347137451171875, -0.0038852691650390625, -0.0035610198974609375, -0.00274658203125, -0.001712799072265625, -0.0006999969482421875, 0.0001220703125, 0.000667572021484375, 0.0009288787841796875, 0.00095367431640625, 0.000820159912109375, 0.0006122589111328125, 0.0003948211669921875, 0.0002155303955078125, 0.0001010894775390625</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="coeffNum">
+  <type>int</type>
+  <value>77</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="coeffSetRealValueImag">
+  <type>java.lang.String</type>
+  <value>0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0530093, -0.04498, 0.0, 0.0749693, 0.159034, 0.224907, 0.249809, 0.224907, 0.159034, 0.0749693, 0.0, -0.04498, -0.0530093, -0.0321283, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="coeffSetScaleValue">
+  <type>java.lang.String</type>
+  <value>0.0001010894775390625,0.0002155303955078125,0.0003948211669921875,0.0006122589111328125,0.000820159912109375,0.00095367431640625,0.0009288787841796875,0.000667572021484375,0.0001220703125,-0.0006999969482421875,-0.001712799072265625,-0.00274658203125,-0.0035610198974609375,-0.0038852691650390625,-0.00347137451171875,-0.0021762847900390625,-1.33514404296875e-5,0.0027923583984375,0.0057926177978515625,0.00836944580078125,0.009822845458984375,0.009515762329101562,0.007022857666015625,0.002292633056640625,-0.0042552947998046875,-0.011697769165039062,-0.018678665161132812,-0.02356719970703125,-0.024717330932617188,-0.020742416381835938,-0.010812759399414062,0.005123138427734375,0.026231765747070312,0.050811767578125,0.07647705078125,0.10046768188476562,0.12002372741699219,0.13280868530273438,0.1372547149658203,0.13280868530273438,0.12002372741699219,0.10046768188476562,0.07647705078125,0.050811767578125,0.026231765747070312,0.005123138427734375,-0.010812759399414062,-0.020742416381835938,-0.024717330932617188,-0.02356719970703125,-0.018678665161132812,-0.011697769165039062,-0.0042552947998046875,0.002292633056640625,0.007022857666015625,0.009515762329101562,0.009822845458984375,0.00836944580078125,0.0057926177978515625,0.0027923583984375,-1.33514404296875e-5,-0.0021762847900390625,-0.00347137451171875,-0.0038852691650390625,-0.0035610198974609375,-0.00274658203125,-0.001712799072265625,-0.0006999969482421875,0.0001220703125,0.000667572021484375,0.0009288787841796875,0.00095367431640625,0.000820159912109375,0.0006122589111328125,0.0003948211669921875,0.0002155303955078125,0.0001010894775390625</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="coeffSetScaleValueImag">
+  <type>java.lang.String</type>
+  <value>0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="coeffSetFixedValue">
+  <type>java.lang.String</type>
+  <value>53,113,207,321,430,500,487,350,64,-367,-898,-1440,-1867,-2037,-1820,-1141,-7,1464,3037,4388,5150,4989,3682,1202,-2231,-6133,-9793,-12356,-12959,-10875,-5669,2686,13753,26640,40096,52674,62927,69630,71961,69630,62927,52674,40096,26640,13753,2686,-5669,-10875,-12959,-12356,-9793,-6133,-2231,1202,3682,4989,5150,4388,3037,1464,-7,-1141,-1820,-2037,-1867,-1440,-898,-367,64,350,487,500,430,321,207,113,53</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="coeffSetFixedValueImag">
+  <type>java.lang.String</type>
+  <value>0,0,0,0,0,0,0,0</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="coeffScaling">
+  <type>java.lang.String</type>
+  <value>none</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="coeffType">
+  <type>java.lang.String</type>
+  <value>frac</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="coeffBitWidth">
+  <type>int</type>
+  <value>18</value>
+  <derived>false</derived>
+  <enabled>false</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="coeffFracBitWidth">
+  <type>int</type>
+  <value>19</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="coeffComplex">
+  <type>boolean</type>
+  <value>false</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="karatsuba">
+  <type>boolean</type>
+  <value>false</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="coeffBitWidth_derived">
+  <type>int</type>
+  <value>20</value>
+  <derived>true</derived>
+  <enabled>false</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="outType">
+  <type>java.lang.String</type>
+  <value>int</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="outBitWidth">
+  <type>int</type>
+  <value>12</value>
+  <derived>true</derived>
+  <enabled>false</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="outFracBitWidth">
+  <type>int</type>
+  <value>0</value>
+  <derived>true</derived>
+  <enabled>false</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="outMSBRound">
+  <type>java.lang.String</type>
+  <value>sat</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="outMsbBitRem">
+  <type>int</type>
+  <value>8</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="outLSBRound">
+  <type>java.lang.String</type>
+  <value>round</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="outLsbBitRem">
+  <type>int</type>
+  <value>19</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="outWidth">
+  <type>int</type>
+  <value>39</value>
+  <derived>true</derived>
+  <enabled>false</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="outWidth_realOnly">
+  <type>int</type>
+  <value>39</value>
+  <derived>true</derived>
+  <enabled>false</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="outFullFracBitWidth_realOnly">
+  <type>int</type>
+  <value>19</value>
+  <derived>true</derived>
+  <enabled>false</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="latency_realOnly">
+  <type>int</type>
+  <value>19</value>
+  <derived>true</derived>
+  <enabled>false</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="outputfifodepth_realOnly">
+  <type>int</type>
+  <value>3</value>
+  <derived>true</derived>
+  <enabled>false</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="outFullFracBitWidth">
+  <type>int</type>
+  <value>0</value>
+  <derived>true</derived>
+  <enabled>false</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="inputInterfaceNum">
+  <type>int</type>
+  <value>1</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="outputInterfaceNum">
+  <type>int</type>
+  <value>1</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="chanPerInputInterface">
+  <type>int</type>
+  <value>1</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="chanPerOutputInterface">
+  <type>int</type>
+  <value>1</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="latency">
+  <type>int</type>
+  <value>19</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="outputfifodepth">
+  <type>int</type>
+  <value>4</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="funcResult">
+  <type>java.lang.String</type>
+  <value><![CDATA[-interp=1 -decim=10 -incycles=9 -len=77 -bankcount=1 -sym -nband=1 -chans=1 -family="Cyclone IV E" 
+|{}|1|1|1|1|39|19|19|3|noCode|LUTS: 249 DSPs: 2 RAM Bits: 3692|]]></value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="busAddressWidth">
+  <type>int</type>
+  <value>6</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="bankCount">
+  <type>int</type>
+  <value>1</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="bankInWidth">
+  <type>int</type>
+  <value>0</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="bankDisplay">
+  <type>int</type>
+  <value>0</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="lutCount">
+  <type>int</type>
+  <value>249</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="dspCount">
+  <type>int</type>
+  <value>2</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="memBitCount">
+  <type>int</type>
+  <value>3692</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="errorList">
+  <type>int</type>
+  <value>0</value>
+  <derived>true</derived>
+  <enabled>true</enabled>
+  <visible>false</visible>
+  <valid>true</valid>
+ </parameter>
+ <parameter name="generateLegacySim">
+  <type>boolean</type>
+  <value>false</value>
+  <derived>false</derived>
+  <enabled>true</enabled>
+  <visible>true</visible>
+  <valid>true</valid>
+ </parameter>
+ <module name="fir_decim10" kind="altera_fir_compiler_ii" version="25.1">
+  <!-- Describes a single module. Module parameters are
+the requested settings for a module instance. -->
+  <parameter name="filterType">
+   <type>java.lang.String</type>
+   <value>decim</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="interpFactor">
+   <type>int</type>
+   <value>1</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="decimFactor">
+   <type>int</type>
+   <value>10</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="symmetryMode">
+   <type>java.lang.String</type>
+   <value>sym</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="L_bandsFilter">
+   <type>java.lang.String</type>
+   <value>1</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="inputChannelNum">
+   <type>int</type>
+   <value>1</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="clockRate">
+   <type>java.lang.String</type>
+   <value>100</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="clockSlack">
+   <type>int</type>
+   <value>0</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="inputRate">
+   <type>java.lang.String</type>
+   <value>10.24</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="coeffReload">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="baseAddress">
+   <type>int</type>
+   <value>0</value>
+   <derived>false</derived>
+   <enabled>false</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="readWriteMode">
+   <type>java.lang.String</type>
+   <value>read_write</value>
+   <derived>false</derived>
+   <enabled>false</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="coefficientReadback">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="coefficientWriteable">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="busDataWidth">
+   <type>int</type>
+   <value>32</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="backPressure">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="deviceFamily">
+   <type>java.lang.String</type>
+   <value>CYCLONEIVE</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+   <sysinfo_type>DEVICE_FAMILY</sysinfo_type>
+  </parameter>
+  <parameter name="speedGrade">
+   <type>java.lang.String</type>
+   <value>medium</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="delayRAMBlockThreshold">
+   <type>int</type>
+   <value>20</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="dualMemDistRAMThreshold">
+   <type>int</type>
+   <value>1280</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="mRAMThreshold">
+   <type>int</type>
+   <value>1000000</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="hardMultiplierThreshold">
+   <type>int</type>
+   <value>-1</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="reconfigurable">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="num_modes">
+   <type>int</type>
+   <value>2</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="ModeWidth">
+   <type>int</type>
+   <value>0</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="reconfigurable_list">
+   <type>java.lang.String</type>
+   <value>0</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="MODE_STRING">
+   <type>java.lang.String</type>
+   <value>None Set</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="modeFormatted">
+   <type>java.lang.String</type>
+   <value>--</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="channelModes">
+   <type>java.lang.String</type>
+   <value>0,1,2,3</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="inputType">
+   <type>java.lang.String</type>
+   <value>int</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="inputBitWidth">
+   <type>int</type>
+   <value>12</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="inputFracBitWidth">
+   <type>int</type>
+   <value>0</value>
+   <derived>false</derived>
+   <enabled>false</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="coeffSetRealValue">
+   <type>java.lang.String</type>
+   <value>0.0001010894775390625, 0.0002155303955078125, 0.0003948211669921875, 0.0006122589111328125, 0.000820159912109375, 0.00095367431640625, 0.0009288787841796875, 0.000667572021484375, 0.0001220703125, -0.0006999969482421875, -0.001712799072265625, -0.00274658203125, -0.0035610198974609375, -0.0038852691650390625, -0.00347137451171875, -0.0021762847900390625, -1.33514404296875e-05, 0.0027923583984375, 0.0057926177978515625, 0.00836944580078125, 0.009822845458984375, 0.0095157623291015625, 0.007022857666015625, 0.002292633056640625, -0.0042552947998046875, -0.011697769165039062, -0.018678665161132812, -0.02356719970703125, -0.024717330932617188, -0.020742416381835938, -0.010812759399414062, 0.005123138427734375, 0.026231765747070312, 0.050811767578125, 0.07647705078125, 0.10046768188476562, 0.12002372741699219, 0.13280868530273438, 0.13725471496582031, 0.13280868530273438, 0.12002372741699219, 0.10046768188476562, 0.07647705078125, 0.050811767578125, 0.026231765747070312, 0.005123138427734375, -0.010812759399414062, -0.020742416381835938, -0.024717330932617188, -0.02356719970703125, -0.018678665161132812, -0.011697769165039062, -0.0042552947998046875, 0.002292633056640625, 0.007022857666015625, 0.0095157623291015625, 0.009822845458984375, 0.00836944580078125, 0.0057926177978515625, 0.0027923583984375, -1.33514404296875e-05, -0.0021762847900390625, -0.00347137451171875, -0.0038852691650390625, -0.0035610198974609375, -0.00274658203125, -0.001712799072265625, -0.0006999969482421875, 0.0001220703125, 0.000667572021484375, 0.0009288787841796875, 0.00095367431640625, 0.000820159912109375, 0.0006122589111328125, 0.0003948211669921875, 0.0002155303955078125, 0.0001010894775390625</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="coeffNum">
+   <type>int</type>
+   <value>77</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="coeffSetRealValueImag">
+   <type>java.lang.String</type>
+   <value>0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0530093, -0.04498, 0.0, 0.0749693, 0.159034, 0.224907, 0.249809, 0.224907, 0.159034, 0.0749693, 0.0, -0.04498, -0.0530093, -0.0321283, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="coeffSetScaleValue">
+   <type>java.lang.String</type>
+   <value>0.0001010894775390625,0.0002155303955078125,0.0003948211669921875,0.0006122589111328125,0.000820159912109375,0.00095367431640625,0.0009288787841796875,0.000667572021484375,0.0001220703125,-0.0006999969482421875,-0.001712799072265625,-0.00274658203125,-0.0035610198974609375,-0.0038852691650390625,-0.00347137451171875,-0.0021762847900390625,-1.33514404296875e-5,0.0027923583984375,0.0057926177978515625,0.00836944580078125,0.009822845458984375,0.009515762329101562,0.007022857666015625,0.002292633056640625,-0.0042552947998046875,-0.011697769165039062,-0.018678665161132812,-0.02356719970703125,-0.024717330932617188,-0.020742416381835938,-0.010812759399414062,0.005123138427734375,0.026231765747070312,0.050811767578125,0.07647705078125,0.10046768188476562,0.12002372741699219,0.13280868530273438,0.1372547149658203,0.13280868530273438,0.12002372741699219,0.10046768188476562,0.07647705078125,0.050811767578125,0.026231765747070312,0.005123138427734375,-0.010812759399414062,-0.020742416381835938,-0.024717330932617188,-0.02356719970703125,-0.018678665161132812,-0.011697769165039062,-0.0042552947998046875,0.002292633056640625,0.007022857666015625,0.009515762329101562,0.009822845458984375,0.00836944580078125,0.0057926177978515625,0.0027923583984375,-1.33514404296875e-5,-0.0021762847900390625,-0.00347137451171875,-0.0038852691650390625,-0.0035610198974609375,-0.00274658203125,-0.001712799072265625,-0.0006999969482421875,0.0001220703125,0.000667572021484375,0.0009288787841796875,0.00095367431640625,0.000820159912109375,0.0006122589111328125,0.0003948211669921875,0.0002155303955078125,0.0001010894775390625</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="coeffSetScaleValueImag">
+   <type>java.lang.String</type>
+   <value>0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="coeffSetFixedValue">
+   <type>java.lang.String</type>
+   <value>53,113,207,321,430,500,487,350,64,-367,-898,-1440,-1867,-2037,-1820,-1141,-7,1464,3037,4388,5150,4989,3682,1202,-2231,-6133,-9793,-12356,-12959,-10875,-5669,2686,13753,26640,40096,52674,62927,69630,71961,69630,62927,52674,40096,26640,13753,2686,-5669,-10875,-12959,-12356,-9793,-6133,-2231,1202,3682,4989,5150,4388,3037,1464,-7,-1141,-1820,-2037,-1867,-1440,-898,-367,64,350,487,500,430,321,207,113,53</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="coeffSetFixedValueImag">
+   <type>java.lang.String</type>
+   <value>0,0,0,0,0,0,0,0</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="coeffScaling">
+   <type>java.lang.String</type>
+   <value>none</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="coeffType">
+   <type>java.lang.String</type>
+   <value>frac</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="coeffBitWidth">
+   <type>int</type>
+   <value>18</value>
+   <derived>false</derived>
+   <enabled>false</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="coeffFracBitWidth">
+   <type>int</type>
+   <value>19</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="coeffComplex">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="karatsuba">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="coeffBitWidth_derived">
+   <type>int</type>
+   <value>20</value>
+   <derived>true</derived>
+   <enabled>false</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="outType">
+   <type>java.lang.String</type>
+   <value>int</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="outBitWidth">
+   <type>int</type>
+   <value>12</value>
+   <derived>true</derived>
+   <enabled>false</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="outFracBitWidth">
+   <type>int</type>
+   <value>0</value>
+   <derived>true</derived>
+   <enabled>false</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="outMSBRound">
+   <type>java.lang.String</type>
+   <value>sat</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="outMsbBitRem">
+   <type>int</type>
+   <value>8</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="outLSBRound">
+   <type>java.lang.String</type>
+   <value>round</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="outLsbBitRem">
+   <type>int</type>
+   <value>19</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="outWidth">
+   <type>int</type>
+   <value>39</value>
+   <derived>true</derived>
+   <enabled>false</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="outWidth_realOnly">
+   <type>int</type>
+   <value>39</value>
+   <derived>true</derived>
+   <enabled>false</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="outFullFracBitWidth_realOnly">
+   <type>int</type>
+   <value>19</value>
+   <derived>true</derived>
+   <enabled>false</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="latency_realOnly">
+   <type>int</type>
+   <value>19</value>
+   <derived>true</derived>
+   <enabled>false</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="outputfifodepth_realOnly">
+   <type>int</type>
+   <value>3</value>
+   <derived>true</derived>
+   <enabled>false</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="outFullFracBitWidth">
+   <type>int</type>
+   <value>0</value>
+   <derived>true</derived>
+   <enabled>false</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="inputInterfaceNum">
+   <type>int</type>
+   <value>1</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="outputInterfaceNum">
+   <type>int</type>
+   <value>1</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="chanPerInputInterface">
+   <type>int</type>
+   <value>1</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="chanPerOutputInterface">
+   <type>int</type>
+   <value>1</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="latency">
+   <type>int</type>
+   <value>19</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="outputfifodepth">
+   <type>int</type>
+   <value>4</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="funcResult">
+   <type>java.lang.String</type>
+   <value><![CDATA[-interp=1 -decim=10 -incycles=9 -len=77 -bankcount=1 -sym -nband=1 -chans=1 -family="Cyclone IV E" 
+|{}|1|1|1|1|39|19|19|3|noCode|LUTS: 249 DSPs: 2 RAM Bits: 3692|]]></value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="busAddressWidth">
+   <type>int</type>
+   <value>6</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="bankCount">
+   <type>int</type>
+   <value>1</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="bankInWidth">
+   <type>int</type>
+   <value>0</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="bankDisplay">
+   <type>int</type>
+   <value>0</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="lutCount">
+   <type>int</type>
+   <value>249</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="dspCount">
+   <type>int</type>
+   <value>2</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="memBitCount">
+   <type>int</type>
+   <value>3692</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="errorList">
+   <type>int</type>
+   <value>0</value>
+   <derived>true</derived>
+   <enabled>true</enabled>
+   <visible>false</visible>
+   <valid>true</valid>
+  </parameter>
+  <parameter name="generateLegacySim">
+   <type>boolean</type>
+   <value>false</value>
+   <derived>false</derived>
+   <enabled>true</enabled>
+   <visible>true</visible>
+   <valid>true</valid>
+  </parameter>
+  <interface name="clk" kind="clock_sink" version="25.1">
+   <!-- The connection points exposed by a module instance for the
+particular module parameters. Connection points and their
+parameters are a RESULT of the module parameters. -->
+   <parameter name="externallyDriven">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="ptfSchematicName">
+    <type>java.lang.String</type>
+    <value></value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="deviceFamily">
+    <type>java.lang.String</type>
+    <value>UNKNOWN</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="generateLegacySim">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <type>clock</type>
+   <isStart>false</isStart>
+   <port>
+    <name>clk</name>
+    <direction>Input</direction>
+    <width>1</width>
+    <role>clk</role>
+   </port>
+  </interface>
+  <interface name="rst" kind="reset_sink" version="25.1">
+   <!-- The connection points exposed by a module instance for the
+particular module parameters. Connection points and their
+parameters are a RESULT of the module parameters. -->
+   <parameter name="associatedClock">
+    <type>java.lang.String</type>
+    <value>clk</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="synchronousEdges">
+    <type>com.altera.sopcmodel.reset.Reset$Edges</type>
+    <value>DEASSERT</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="deviceFamily">
+    <type>java.lang.String</type>
+    <value>UNKNOWN</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="generateLegacySim">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <type>reset</type>
+   <isStart>false</isStart>
+   <port>
+    <name>reset_n</name>
+    <direction>Input</direction>
+    <width>1</width>
+    <role>reset_n</role>
+   </port>
+  </interface>
+  <interface
+     name="avalon_streaming_sink"
+     kind="avalon_streaming_sink"
+     version="25.1">
+   <!-- The connection points exposed by a module instance for the
+particular module parameters. Connection points and their
+parameters are a RESULT of the module parameters. -->
+   <parameter name="associatedClock">
+    <type>java.lang.String</type>
+    <value>clk</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="associatedReset">
+    <type>java.lang.String</type>
+    <value>rst</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="beatsPerCycle">
+    <type>int</type>
+    <value>1</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="dataBitsPerSymbol">
+    <type>int</type>
+    <value>12</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="emptyWithinPacket">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="errorDescriptor">
+    <type>[Ljava.lang.String;</type>
+    <value></value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="firstSymbolInHighOrderBits">
+    <type>boolean</type>
+    <value>true</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="highOrderSymbolAtMSB">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="maxChannel">
+    <type>int</type>
+    <value>0</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="packetDescription">
+    <type>java.lang.String</type>
+    <value></value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="readyLatency">
+    <type>int</type>
+    <value>0</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="symbolsPerBeat">
+    <type>int</type>
+    <value>1</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="deviceFamily">
+    <type>java.lang.String</type>
+    <value>UNKNOWN</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="generateLegacySim">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <type>avalon_streaming</type>
+   <isStart>false</isStart>
+   <port>
+    <name>ast_sink_data</name>
+    <direction>Input</direction>
+    <width>12</width>
+    <role>data</role>
+   </port>
+   <port>
+    <name>ast_sink_valid</name>
+    <direction>Input</direction>
+    <width>1</width>
+    <role>valid</role>
+   </port>
+   <port>
+    <name>ast_sink_error</name>
+    <direction>Input</direction>
+    <width>2</width>
+    <role>error</role>
+   </port>
+  </interface>
+  <interface
+     name="avalon_streaming_source"
+     kind="avalon_streaming_source"
+     version="25.1">
+   <!-- The connection points exposed by a module instance for the
+particular module parameters. Connection points and their
+parameters are a RESULT of the module parameters. -->
+   <parameter name="associatedClock">
+    <type>java.lang.String</type>
+    <value>clk</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="associatedReset">
+    <type>java.lang.String</type>
+    <value>rst</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="beatsPerCycle">
+    <type>int</type>
+    <value>1</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="dataBitsPerSymbol">
+    <type>int</type>
+    <value>12</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="emptyWithinPacket">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="errorDescriptor">
+    <type>[Ljava.lang.String;</type>
+    <value></value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="firstSymbolInHighOrderBits">
+    <type>boolean</type>
+    <value>true</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="highOrderSymbolAtMSB">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="maxChannel">
+    <type>int</type>
+    <value>0</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="packetDescription">
+    <type>java.lang.String</type>
+    <value></value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="readyLatency">
+    <type>int</type>
+    <value>0</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="symbolsPerBeat">
+    <type>int</type>
+    <value>1</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>false</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="deviceFamily">
+    <type>java.lang.String</type>
+    <value>UNKNOWN</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <parameter name="generateLegacySim">
+    <type>boolean</type>
+    <value>false</value>
+    <derived>false</derived>
+    <enabled>true</enabled>
+    <visible>true</visible>
+    <valid>true</valid>
+   </parameter>
+   <type>avalon_streaming</type>
+   <isStart>true</isStart>
+   <port>
+    <name>ast_source_data</name>
+    <direction>Output</direction>
+    <width>12</width>
+    <role>data</role>
+   </port>
+   <port>
+    <name>ast_source_valid</name>
+    <direction>Output</direction>
+    <width>1</width>
+    <role>valid</role>
+   </port>
+   <port>
+    <name>ast_source_error</name>
+    <direction>Output</direction>
+    <width>2</width>
+    <role>error</role>
+   </port>
+  </interface>
+ </module>
+ <plugin>
+  <instanceCount>1</instanceCount>
+  <name>altera_fir_compiler_ii</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IModule</subtype>
+  <displayName>FIR II</displayName>
+  <version>25.1</version>
+ </plugin>
+ <plugin>
+  <instanceCount>1</instanceCount>
+  <name>clock_sink</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Clock Input</displayName>
+  <version>25.1</version>
+ </plugin>
+ <plugin>
+  <instanceCount>1</instanceCount>
+  <name>reset_sink</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Reset Input</displayName>
+  <version>25.1</version>
+ </plugin>
+ <plugin>
+  <instanceCount>1</instanceCount>
+  <name>avalon_streaming_sink</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Avalon Streaming Sink</displayName>
+  <version>25.1</version>
+ </plugin>
+ <plugin>
+  <instanceCount>1</instanceCount>
+  <name>avalon_streaming_source</name>
+  <type>com.altera.entityinterfaces.IElementClass</type>
+  <subtype>com.altera.entityinterfaces.IMutableConnectionPoint</subtype>
+  <displayName>Avalon Streaming Source</displayName>
+  <version>25.1</version>
+ </plugin>
+ <reportVersion>25.1 1129</reportVersion>
+ <uniqueIdentifier></uniqueIdentifier>
+</EnsembleReport>

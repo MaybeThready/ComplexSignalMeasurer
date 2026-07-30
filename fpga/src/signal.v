@@ -16,7 +16,12 @@ module SignalSync
     input clk, rstn, signal,
     output signal_sync
 );
-    reg signal_buff1, signal_buff2;
+    (* altera_attribute = {
+        "-name ADV_NETLIST_OPT_ALLOWED NEVER_ALLOW; ",
+        "-name SYNCHRONIZER_IDENTIFICATION FORCED_IF_ASYNCHRONOUS; ",
+        "-name DONT_MERGE_REGISTER ON; ",
+        "-name PRESERVE_REGISTER ON"
+    } *) reg signal_buff1, signal_buff2;
     always @(posedge clk or negedge rstn)
     begin
         if (!rstn)

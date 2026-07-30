@@ -2,7 +2,7 @@
 #include "arm_math.h"
 
 #define SAMPLE_RATE (1024.0f) // kHz
-#define NOISE_GATE (10.0f)
+#define NOISE_GATE (3.0f)
 
 uint16_t signal_adc_code[N_SAMPLES] = { 0 };
 float signal_samples[N_SAMPLES] = { 0 };
@@ -68,25 +68,14 @@ void delete_peak(int32_t index, int32_t window_size)
 
 void signal_update_result()
 {
-    // 数据归一化、加窗与峰峰值计算
-    signal_vmax = signal_adc_code[0] / 4095.0f * MAX_VPP + MIN_INPUT_VAL;
-    signal_vmin = signal_vmax;
+    // 数据归一化、加窗
     float tmp;
     for (size_t i = 0; i < N_SAMPLES; i++)
     {
         tmp = signal_adc_code[i] / 4095.0f * MAX_VPP + MIN_INPUT_VAL;
-        if (tmp < signal_vmin)
-        {
-            signal_vmin = tmp;
-        }
-        if (tmp > signal_vmax)
-        {
-            signal_vmax = tmp;
-        }
         signal_samples[i] = tmp;
         signal_windowed_samples[i] = tmp * hanning_window[i];
     }
-    signal_vpp = signal_vmax - signal_vmin;
 
     // FFT变换
     arm_rfft_fast_f32(&rfftf32, signal_windowed_samples, signal_fft_complex_result, 0);
@@ -147,7 +136,8 @@ void signal_update_result()
         {
             signal_harmonics[i].valid = true;
             signal_harmonics[i].order = (uint8_t)round(harmonic_freqs[i] / base_freq);
-            signal_harmonics[i].freq = base_freq * signal_harmonics[i].order;
+            // signal_harmonics[i].freq = base_freq * signal_harmonics[i].order;
+            signal_harmonics[i].freq = harmonic_freqs[i];
             signal_harmonics[i].amp = harmonic_amp[i];
             signal_vrms += signal_harmonics[i].amp * signal_harmonics[i].amp / 2.0f;
         }
@@ -167,6 +157,8 @@ void signal_generate_wave(uint8_t period_cnt)
 
     float t = 0.0f;
     float tmp = 0.0f;
+    signal_vmax = 0.0f;
+    signal_vmin = 0.0f;
     for (size_t i = 0; i < UART_X_PIXELS; i++)
     {
         tmp = 0.0f;
@@ -180,9 +172,20 @@ void signal_generate_wave(uint8_t period_cnt)
 
         tmp = (tmp - MIN_INPUT_VAL) / MAX_VPP * 254.0f;
         tmp = tmp < 0.0f ? 0.0f : (tmp > 254.0f ? 254.0f : tmp);
+
+        if (tmp > signal_vmax)
+        {
+            signal_vmax = tmp;
+        }
+        if (tmp < signal_vmin)
+        {
+            signal_vmin = tmp;
+        }
+
         signal_uart_wave[i] = (uint8_t)tmp;
         t += time_step;
     }
+    signal_vpp = signal_vmax - signal_vmin;
 }
 
 void signal_generate_spectrum()

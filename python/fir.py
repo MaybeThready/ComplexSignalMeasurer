@@ -5,25 +5,30 @@ from scipy.signal import freqz, remez
 
 
 # Filter requirements
-SAMPLE_RATE_HZ = 20_000_000
-DECIMATION_FACTOR = 8
+SAMPLE_RATE_HZ = 10_240_000
+DECIMATION_FACTOR = 10
 OUTPUT_SAMPLE_RATE_HZ = SAMPLE_RATE_HZ // DECIMATION_FACTOR
 PASSBAND_EDGE_HZ = 500_000
 STOPBAND_EDGE_HZ = 1_000_000
 PASSBAND_RIPPLE_DB = 0.1
 STOPBAND_ATTENUATION_DB = 80.0
 
-# Resource-constrained target for EP4CE6:
-# 149 symmetric taps -> 75 unique multiplications.
-# At 100 MHz / 20 MS/s, five clocks are available per input sample, so the
-# FIR II implementation can time-share exactly 15 DSP multipliers.
+# This is a project-specific decimator.  The measured signal is limited to
+# 0..500 kHz and the known out-of-band interferers start at 1 MHz.  It is not
+# a general-purpose anti-alias filter for arbitrary energy in 524 kHz..1 MHz:
+# that band can fold into 0..500 kHz after decimation to 1.024 MS/s.
+#
+# Search for the shortest odd, symmetric implementation that meets the
+# requirements after coefficient quantization.  The 100 MHz FIR clock gives
+# enough processing clocks per ADC sample for the FIR II core to time-share
+# the Cyclone IV DSP blocks.
 DESIGN_PASSBAND_RIPPLE_DB = 0.1
 DESIGN_STOPBAND_ATTENUATION_DB = 82.0
 MAX_TAPS = 149
 
 # Cyclone IV FIR II coefficient format
 COEFFICIENT_WIDTH = 18
-COEFFICIENT_FRACTIONAL_WIDTH = 20
+COEFFICIENT_FRACTIONAL_WIDTH = 19
 FREQ_RESPONSE_POINTS = 262_144
 OUTPUT_FILE = Path(__file__).resolve().parents[1] / "fir_coef.txt"
 
@@ -46,15 +51,17 @@ def measure_response(coefficients: np.ndarray) -> tuple[float, float, float]:
 def quantize_coefficients(
     coefficients: np.ndarray,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Quantize coefficients into signed 18-bit integers with 20 frac bits."""
+    """Quantize coefficients into signed 18-bit integers with 19 frac bits."""
     scale = 1 << COEFFICIENT_FRACTIONAL_WIDTH
     minimum = -(1 << (COEFFICIENT_WIDTH - 1))
     maximum = (1 << (COEFFICIENT_WIDTH - 1)) - 1
-    integers = np.clip(
-        np.rint(coefficients * scale),
-        minimum,
-        maximum,
-    ).astype(np.int64)
+    rounded = np.rint(coefficients * scale)
+    if np.any(rounded < minimum) or np.any(rounded > maximum):
+        raise ValueError(
+            "Coefficient format overflow; reduce the fractional width "
+            "instead of clipping the filter response."
+        )
+    integers = rounded.astype(np.int64)
     return integers, integers.astype(np.float64) / scale
 
 
@@ -115,7 +122,10 @@ def main() -> None:
     np.savetxt(
         OUTPUT_FILE,
         quantized_coefficients[np.newaxis, :],
-        fmt="%.12g",
+        # 17 significant digits preserve every binary64 value exactly.  This
+        # matters because each Q19 coefficient must reach FIR Compiler on the
+        # intended integer boundary instead of being truncated by one LSB.
+        fmt="%.17g",
         delimiter=", ",
     )
 
