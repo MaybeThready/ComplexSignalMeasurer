@@ -58,20 +58,6 @@ set_global_assignment -name EDA_GENERATE_FUNCTIONAL_NETLIST OFF -section_id eda_
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_location_assignment PIN_C14 -to sel[0]
-set_location_assignment PIN_D14 -to sel[1]
-set_location_assignment PIN_G11 -to sel[2]
-set_location_assignment PIN_F11 -to sel[3]
-set_location_assignment PIN_C11 -to sel[4]
-set_location_assignment PIN_D12 -to sel[5]
-set_location_assignment PIN_D9 -to seg[0]
-set_location_assignment PIN_E10 -to seg[1]
-set_location_assignment PIN_E8 -to seg[2]
-set_location_assignment PIN_D11 -to seg[3]
-set_location_assignment PIN_C8 -to seg[4]
-set_location_assignment PIN_D8 -to seg[5]
-set_location_assignment PIN_E9 -to seg[6]
-set_location_assignment PIN_C9 -to seg[7]
 set_location_assignment PIN_J14 -to rstn
 set_location_assignment PIN_E1 -to clk_50M
 set_global_assignment -name ENABLE_OCT_DONE OFF
@@ -93,4 +79,37 @@ set_global_assignment -name VERILOG_FILE src/components.v
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name QIP_FILE pll.qip
+set_global_assignment -name QIP_FILE fir.qip
+set_global_assignment -name SIP_FILE fir.sip
+set_location_assignment PIN_C6 -to adc_code[11]
+set_location_assignment PIN_B6 -to adc_code[10]
+set_location_assignment PIN_A6 -to adc_code[9]
+set_location_assignment PIN_B7 -to adc_code[8]
+set_location_assignment PIN_A7 -to adc_code[7]
+set_location_assignment PIN_B8 -to adc_code[6]
+set_location_assignment PIN_A8 -to adc_code[5]
+set_location_assignment PIN_A9 -to adc_code[4]
+set_location_assignment PIN_B9 -to adc_code[3]
+set_location_assignment PIN_A11 -to adc_code[2]
+set_location_assignment PIN_B11 -to adc_code[1]
+set_location_assignment PIN_A12 -to adc_code[0]
+set_location_assignment PIN_B12 -to clk_20M
+set_location_assignment PIN_N6 -to filtered_code[11]
+set_location_assignment PIN_R8 -to filtered_code[10]
+set_location_assignment PIN_T8 -to filtered_code[9]
+set_location_assignment PIN_T9 -to filtered_code[8]
+set_location_assignment PIN_R9 -to filtered_code[7]
+set_location_assignment PIN_T10 -to filtered_code[6]
+set_location_assignment PIN_R10 -to filtered_code[5]
+set_location_assignment PIN_T11 -to filtered_code[4]
+set_location_assignment PIN_M11 -to filtered_code[3]
+set_location_assignment PIN_N12 -to filtered_code[2]
+set_location_assignment PIN_P8 -to filtered_code[1]
+set_location_assignment PIN_N8 -to filtered_code[0]
+set_global_assignment -name ENABLE_SIGNALTAP OFF
+set_global_assignment -name USE_SIGNALTAP_FILE output_files/stp1.stp
+set_global_assignment -name SIGNALTAP_FILE output_files/stp1.stp
+set_location_assignment PIN_T13 -to cs
+set_location_assignment PIN_R13 -to dout
+set_location_assignment PIN_T14 -to sclk
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

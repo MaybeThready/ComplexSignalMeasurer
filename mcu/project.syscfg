@@ -15,6 +15,7 @@ const GPIO2   = GPIO.addInstance();
 const GPIO3   = GPIO.addInstance();
 const SPI     = scripting.addModule("/ti/driverlib/SPI", {}, false);
 const SPI1    = SPI.addInstance();
+const SPI2    = SPI.addInstance();
 const SYSCTL  = scripting.addModule("/ti/driverlib/SYSCTL");
 const SYSTICK = scripting.addModule("/ti/driverlib/SYSTICK");
 const UART    = scripting.addModule("/ti/driverlib/UART", {}, false);
@@ -127,6 +128,30 @@ SPI1.peripheral.$assign         = "SPI0";
 SPI1.peripheral.sclkPin.$assign = "PB3";
 SPI1.peripheral.mosiPin.$assign = "PB2";
 
+SPI2.$name                                    = "ADC_SPI";
+SPI2.mode                                     = "PERIPHERAL";
+SPI2.rxFifoThreshold                          = "DL_SPI_RX_FIFO_LEVEL_ONE_FRAME";
+SPI2.enabledDMAEvent1Triggers                 = "DL_SPI_DMA_INTERRUPT_RX";
+SPI2.dataSize                                 = 12;
+SPI2.clearRXCounterOnCSIdle                   = true;
+SPI2.enabledInterrupts                        = ["DMA_DONE_RX"];
+SPI2.direction                                = "PICO";
+SPI2.sclkPinConfig.$name                      = "ti_driverlib_gpio_GPIOPinGeneric4";
+SPI2.sclkPinConfig.onlyInternalResistor       = scripting.forceWrite(false);
+SPI2.sclkPinConfig.passedPeripheralType       = scripting.forceWrite("Digital");
+SPI2.DMA_CHANNEL_EVENT1.$name                 = "DMA_CH0";
+SPI2.DMA_CHANNEL_EVENT1.addressMode           = "f2b";
+SPI2.DMA_CHANNEL_EVENT1.configureTransferSize = true;
+SPI2.DMA_CHANNEL_EVENT1.transferSize          = 2048;
+SPI2.DMA_CHANNEL_EVENT1.srcLength             = "HALF_WORD";
+SPI2.DMA_CHANNEL_EVENT1.dstLength             = "HALF_WORD";
+SPI2.mosiPinConfig.$name                      = "ti_driverlib_gpio_GPIOPinGeneric6";
+SPI2.cs0PinConfig.$name                       = "ti_driverlib_gpio_GPIOPinGeneric7";
+SPI2.peripheral.$assign                       = "SPI1";
+SPI2.peripheral.sclkPin.$assign               = "PB16";
+SPI2.peripheral.mosiPin.$assign               = "PB15";
+SPI2.peripheral.cs0Pin.$assign                = "PB13";
+
 SYSCTL.clockTreeEn           = true;
 SYSCTL.forceDefaultClkConfig = true;
 
@@ -155,9 +180,10 @@ UART1.rxPinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric3";
  * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
  * re-solve from scratch.
  */
-pinFunction4.peripheral.$suggestSolution           = "SYSCTL";
-pinFunction4.peripheral.hfxInPin.$suggestSolution  = "PA5";
-pinFunction4.peripheral.hfxOutPin.$suggestSolution = "PA6";
-Board.peripheral.$suggestSolution                  = "DEBUGSS";
-Board.peripheral.swclkPin.$suggestSolution         = "PA20";
-Board.peripheral.swdioPin.$suggestSolution         = "PA19";
+pinFunction4.peripheral.$suggestSolution            = "SYSCTL";
+pinFunction4.peripheral.hfxInPin.$suggestSolution   = "PA5";
+pinFunction4.peripheral.hfxOutPin.$suggestSolution  = "PA6";
+Board.peripheral.$suggestSolution                   = "DEBUGSS";
+Board.peripheral.swclkPin.$suggestSolution          = "PA20";
+Board.peripheral.swdioPin.$suggestSolution          = "PA19";
+SPI2.DMA_CHANNEL_EVENT1.peripheral.$suggestSolution = "DMA_CH0";

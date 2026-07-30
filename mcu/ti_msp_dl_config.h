@@ -115,7 +115,29 @@ extern "C" {
 #define GPIO_SPI_0_SCLK_PIN                                       DL_GPIO_PIN_3
 #define GPIO_SPI_0_IOMUX_SCLK                                   (IOMUX_PINCM16)
 #define GPIO_SPI_0_IOMUX_SCLK_FUNC                   IOMUX_PINCM16_PF_SPI0_SCLK
+/* Defines for ADC_SPI */
+#define ADC_SPI_INST                                                       SPI1
+#define ADC_SPI_INST_IRQHandler                                 SPI1_IRQHandler
+#define ADC_SPI_INST_INT_IRQN                                     SPI1_INT_IRQn
+#define GPIO_ADC_SPI_PICO_PORT                                            GPIOB
+#define GPIO_ADC_SPI_PICO_PIN                                    DL_GPIO_PIN_15
+#define GPIO_ADC_SPI_IOMUX_PICO                                 (IOMUX_PINCM32)
+#define GPIO_ADC_SPI_IOMUX_PICO_FUNC                 IOMUX_PINCM32_PF_SPI1_PICO
+/* GPIO configuration for ADC_SPI */
+#define GPIO_ADC_SPI_SCLK_PORT                                            GPIOB
+#define GPIO_ADC_SPI_SCLK_PIN                                    DL_GPIO_PIN_16
+#define GPIO_ADC_SPI_IOMUX_SCLK                                 (IOMUX_PINCM33)
+#define GPIO_ADC_SPI_IOMUX_SCLK_FUNC                 IOMUX_PINCM33_PF_SPI1_SCLK
+#define GPIO_ADC_SPI_CS_PORT                                              GPIOB
+#define GPIO_ADC_SPI_CS_PIN                                      DL_GPIO_PIN_13
+#define GPIO_ADC_SPI_IOMUX_CS                                   (IOMUX_PINCM30)
+#define GPIO_ADC_SPI_IOMUX_CS_FUNC                    IOMUX_PINCM30_PF_SPI1_CS0
 
+
+
+/* Defines for DMA_CH0 */
+#define DMA_CH0_CHAN_ID                                                      (0)
+#define ADC_SPI_INST_DMA_TRIGGER                              (DMA_SPI1_RX_TRIG)
 
 
 /* Defines for L1: GPIOA.14 with pinCMx 36 on package pin 53 */
@@ -201,6 +223,8 @@ void SYSCFG_DL_GPIO_init(void);
 void SYSCFG_DL_SYSCTL_init(void);
 void SYSCFG_DL_DEFAULT_UART_init(void);
 void SYSCFG_DL_SPI_0_init(void);
+void SYSCFG_DL_ADC_SPI_init(void);
+void SYSCFG_DL_DMA_init(void);
 
 void SYSCFG_DL_SYSTICK_init(void);
 
