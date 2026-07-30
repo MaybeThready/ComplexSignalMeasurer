@@ -24,3 +24,5 @@ fpga/db
 fpga/incremental_db
 fpga/output_files
 fpga/simulation
+
+usart_sig/

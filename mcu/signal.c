@@ -140,6 +140,7 @@ void signal_update_result()
 
     // 整理谐波数据并计算RMS
     float base_freq = harmonic_freqs[0];
+    signal_vrms = 0.0f;
     for (size_t i = 0; i < N_HARMONICS; i++)
     {
         if (i < harmonic_cnt)
@@ -173,16 +174,15 @@ void signal_generate_wave(uint8_t period_cnt)
         {
             if (signal_harmonics[j].valid)
             {
-                tmp += arm_sin_f32(2 * PI * signal_harmonics[j].freq * t);
+                tmp += signal_harmonics[j].amp * arm_sin_f32(2 * PI * signal_harmonics[j].freq * t);
             }
         }
 
         tmp = (tmp - MIN_INPUT_VAL) / MAX_VPP * 254.0f;
         tmp = tmp < 0.0f ? 0.0f : (tmp > 254.0f ? 254.0f : tmp);
         signal_uart_wave[i] = (uint8_t)tmp;
+        t += time_step;
     }
-
-    t += time_step;
 }
 
 void signal_generate_spectrum()
