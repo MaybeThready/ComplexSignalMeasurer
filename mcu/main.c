@@ -1,6 +1,7 @@
 #include "ti_msp_dl_config.h"
 #include "bsp/msp_sys.h"
 #include "bsp/oled/oled.h"
+#include "bsp/keyboard.h"
 #include "ui_config.h"
 #include "signal.h"
 
@@ -36,6 +37,7 @@ int main()
     SYSCFG_DL_init();
     init_sys();
     init_oled();
+    init_keyboard();
     init_app_ui();
 
     DL_SPI_clearInterruptStatus(
@@ -44,6 +46,8 @@ int main()
     reset_dma();
     NVIC_EnableIRQ(ADC_SPI_INST_INT_IRQN);
 
+    init_signal();
+
     while (1)
     {
         if (dma_done)
@@ -51,6 +55,7 @@ int main()
             dma_done = false;
             int_dma_done();
         }
+        keyboard_update();
         app_ui_update();
     }
 

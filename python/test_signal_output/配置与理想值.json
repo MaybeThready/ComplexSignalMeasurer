@@ -1,0 +1,1114 @@
+[
+  {
+    "id": "01_ua_classic",
+    "title": "经典组合：H3 + H4",
+    "type": "ua",
+    "note": "对应题面举例，基频为 10.5 kHz。",
+    "fundamental_hz": 10500,
+    "period_us": 95.23809523809524,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 10500,
+        "vpp_mv": 120,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H3",
+        "order": 3,
+        "frequency_hz": 31500,
+        "vpp_mv": 40,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H4",
+        "order": 4,
+        "frequency_hz": 42000,
+        "vpp_mv": 30,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 129.90381056652618,
+      "true_rms_mv": 45.96194077712559,
+      "fundamental_hz": 10500,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 10500,
+          "amplitude_peak_mv": 60.0
+        },
+        {
+          "harmonic": "H3",
+          "frequency_hz": 31500,
+          "amplitude_peak_mv": 20.0
+        },
+        {
+          "harmonic": "H4",
+          "frequency_hz": 42000,
+          "amplitude_peak_mv": 15.0
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 129.90381056652618,
+      "true_rms_mv": 45.96194077712559
+    }
+  },
+  {
+    "id": "02_ua_low",
+    "title": "ua 低幅度：H2",
+    "type": "ua",
+    "note": "总波形 Upp 约 101 mV，贴近 ua 下限。",
+    "fundamental_hz": 50000,
+    "period_us": 20.0,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 50000,
+        "vpp_mv": 90,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H2",
+        "order": 2,
+        "frequency_hz": 100000,
+        "vpp_mv": 25,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 100.82953753663546,
+      "true_rms_mv": 33.02461203405726,
+      "fundamental_hz": 50000,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 50000,
+          "amplitude_peak_mv": 45.0
+        },
+        {
+          "harmonic": "H2",
+          "frequency_hz": 100000,
+          "amplitude_peak_mv": 12.5
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 100.82953753663546,
+      "true_rms_mv": 33.02461203405726
+    }
+  },
+  {
+    "id": "03_ua_h8_edge",
+    "title": "ua 频率上限：H8",
+    "type": "ua",
+    "note": "H8 恰好为 200 kHz，总 Upp 接近 250 mV。",
+    "fundamental_hz": 25000,
+    "period_us": 40.0,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 25000,
+        "vpp_mv": 195,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H8",
+        "order": 8,
+        "frequency_hz": 200000,
+        "vpp_mv": 55,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 246.44820676538637,
+      "true_rms_mv": 71.63274390947201,
+      "fundamental_hz": 25000,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 25000,
+          "amplitude_peak_mv": 97.5
+        },
+        {
+          "harmonic": "H8",
+          "frequency_hz": 200000,
+          "amplitude_peak_mv": 27.5
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 246.44820676538637,
+      "true_rms_mv": 71.63274390947201
+    }
+  },
+  {
+    "id": "04_ua_adjacent",
+    "title": "相邻谱线：H2 + H3",
+    "type": "ua",
+    "note": "检验相邻谱线根数和幅值比例。",
+    "fundamental_hz": 60000,
+    "period_us": 16.666666666666668,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 60000,
+        "vpp_mv": 120,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H2",
+        "order": 2,
+        "frequency_hz": 120000,
+        "vpp_mv": 50,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H3",
+        "order": 3,
+        "frequency_hz": 180000,
+        "vpp_mv": 35,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 159.71329594172178,
+      "true_rms_mv": 47.598581911649426,
+      "fundamental_hz": 60000,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 60000,
+          "amplitude_peak_mv": 60.0
+        },
+        {
+          "harmonic": "H2",
+          "frequency_hz": 120000,
+          "amplitude_peak_mv": 25.0
+        },
+        {
+          "harmonic": "H3",
+          "frequency_hz": 180000,
+          "amplitude_peak_mv": 17.5
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 159.71329594172178,
+      "true_rms_mv": 47.598581911649426
+    }
+  },
+  {
+    "id": "05_ub_low",
+    "title": "ub 低幅度：H7",
+    "type": "ub",
+    "note": "总波形 Upp 约 51 mV，贴近 ub 下限。",
+    "fundamental_hz": 62500,
+    "period_us": 16.0,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 62500,
+        "vpp_mv": 45,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H7",
+        "order": 7,
+        "frequency_hz": 437500,
+        "vpp_mv": 10,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 50.904574283823635,
+      "true_rms_mv": 16.29800601300662,
+      "fundamental_hz": 62500,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 62500,
+          "amplitude_peak_mv": 22.5
+        },
+        {
+          "harmonic": "H7",
+          "frequency_hz": 437500,
+          "amplitude_peak_mv": 5.0
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 50.904574283823635,
+      "true_rms_mv": 16.29800601300662
+    }
+  },
+  {
+    "id": "06_ub_double_edge",
+    "title": "ub 幅度/频率上限：H5 + H8",
+    "type": "ub",
+    "note": "H8=500 kHz，总 Upp 约 249 mV。",
+    "fundamental_hz": 62500,
+    "period_us": 16.0,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 62500,
+        "vpp_mv": 180,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H5",
+        "order": 5,
+        "frequency_hz": 312500,
+        "vpp_mv": 40,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H8",
+        "order": 8,
+        "frequency_hz": 500000,
+        "vpp_mv": 45,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 249.3382627158889,
+      "true_rms_mv": 67.10532765734774,
+      "fundamental_hz": 62500,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 62500,
+          "amplitude_peak_mv": 90.0
+        },
+        {
+          "harmonic": "H5",
+          "frequency_hz": 312500,
+          "amplitude_peak_mv": 20.0
+        },
+        {
+          "harmonic": "H8",
+          "frequency_hz": 500000,
+          "amplitude_peak_mv": 22.5
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 249.3382627158889,
+      "true_rms_mv": 67.10532765734774
+    }
+  },
+  {
+    "id": "07_ub_weak",
+    "title": "弱谱线：H4 + H6",
+    "type": "ub",
+    "note": "弱谐波幅值为 4 mV、3 mV，适合检查小谱线识别。",
+    "fundamental_hz": 40000,
+    "period_us": 25.0,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 40000,
+        "vpp_mv": 140,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H4",
+        "order": 4,
+        "frequency_hz": 160000,
+        "vpp_mv": 8,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H6",
+        "order": 6,
+        "frequency_hz": 240000,
+        "vpp_mv": 6,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 140.05441869566616,
+      "true_rms_mv": 49.62358310319802,
+      "fundamental_hz": 40000,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 40000,
+          "amplitude_peak_mv": 70.0
+        },
+        {
+          "harmonic": "H4",
+          "frequency_hz": 160000,
+          "amplitude_peak_mv": 4.0
+        },
+        {
+          "harmonic": "H6",
+          "frequency_hz": 240000,
+          "amplitude_peak_mv": 3.0
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 140.05441869566616,
+      "true_rms_mv": 49.62358310319802
+    }
+  },
+  {
+    "id": "08_ub_interference",
+    "title": "H8 模拟 1 MHz 干扰",
+    "type": "ub+uJ",
+    "note": "受信号源限制，用同基频 H8 产生 1 MHz、200 mVpp 干扰；期望测量值只针对 H1+H2+H3 构成的 ub。",
+    "fundamental_hz": 125000,
+    "period_us": 8.0,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 125000,
+        "vpp_mv": 130,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H2",
+        "order": 2,
+        "frequency_hz": 250000,
+        "vpp_mv": 35,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H3",
+        "order": 3,
+        "frequency_hz": 375000,
+        "vpp_mv": 20,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H8",
+        "order": 8,
+        "frequency_hz": 1000000,
+        "vpp_mv": 200,
+        "phase_deg": 0,
+        "role": "干扰"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 144.6483488569928,
+      "true_rms_mv": 48.12094138730039,
+      "fundamental_hz": 125000,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 125000,
+          "amplitude_peak_mv": 65.0
+        },
+        {
+          "harmonic": "H2",
+          "frequency_hz": 250000,
+          "amplitude_peak_mv": 17.5
+        },
+        {
+          "harmonic": "H3",
+          "frequency_hz": 375000,
+          "amplitude_peak_mv": 10.0
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 344.335518523122,
+      "true_rms_mv": 85.53142697278001
+    }
+  },
+  {
+    "id": "09_ua_single_h5",
+    "title": "单谐波专项：H5",
+    "type": "ua",
+    "note": "H5 恰好为 200 kHz，用于 ua 单根五次谐波识别。",
+    "fundamental_hz": 40000,
+    "period_us": 25.0,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 40000,
+        "vpp_mv": 130,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H5",
+        "order": 5,
+        "frequency_hz": 200000,
+        "vpp_mv": 25,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 155.0,
+      "true_rms_mv": 46.804113067122636,
+      "fundamental_hz": 40000,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 40000,
+          "amplitude_peak_mv": 65.0
+        },
+        {
+          "harmonic": "H5",
+          "frequency_hz": 200000,
+          "amplitude_peak_mv": 12.5
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 155.0,
+      "true_rms_mv": 46.804113067122636
+    }
+  },
+  {
+    "id": "10_ua_h2_h7",
+    "title": "跨距组合：H2 + H7",
+    "type": "ua",
+    "note": "同时包含近端 H2 与远端 H7，检查频谱相对位置。",
+    "fundamental_hz": 25000,
+    "period_us": 40.0,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 25000,
+        "vpp_mv": 110,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H2",
+        "order": 2,
+        "frequency_hz": 50000,
+        "vpp_mv": 30,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H7",
+        "order": 7,
+        "frequency_hz": 175000,
+        "vpp_mv": 20,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 142.60692478102771,
+      "true_rms_mv": 40.92676385936225,
+      "fundamental_hz": 25000,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 25000,
+          "amplitude_peak_mv": 55.0
+        },
+        {
+          "harmonic": "H2",
+          "frequency_hz": 50000,
+          "amplitude_peak_mv": 15.0
+        },
+        {
+          "harmonic": "H7",
+          "frequency_hz": 175000,
+          "amplitude_peak_mv": 10.0
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 142.60692478102771,
+      "true_rms_mv": 40.92676385936225
+    }
+  },
+  {
+    "id": "11_ua_odd_h3_h5",
+    "title": "奇次组合：H3 + H5",
+    "type": "ua",
+    "note": "三个奇次分量，适合检查非正弦对称波形与真有效值。",
+    "fundamental_hz": 20000,
+    "period_us": 50.0,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 20000,
+        "vpp_mv": 160,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H3",
+        "order": 3,
+        "frequency_hz": 60000,
+        "vpp_mv": 30,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H5",
+        "order": 5,
+        "frequency_hz": 100000,
+        "vpp_mv": 20,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 150.0,
+      "true_rms_mv": 57.98706752371601,
+      "fundamental_hz": 20000,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 20000,
+          "amplitude_peak_mv": 80.0
+        },
+        {
+          "harmonic": "H3",
+          "frequency_hz": 60000,
+          "amplitude_peak_mv": 15.0
+        },
+        {
+          "harmonic": "H5",
+          "frequency_hz": 100000,
+          "amplitude_peak_mv": 10.0
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 150.0,
+      "true_rms_mv": 57.98706752371601
+    }
+  },
+  {
+    "id": "12_ua_h6",
+    "title": "单谐波专项：H6",
+    "type": "ua",
+    "note": "H6=180 kHz，中低幅值 ua 单谐波案例。",
+    "fundamental_hz": 30000,
+    "period_us": 33.333333333333336,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 30000,
+        "vpp_mv": 105,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H6",
+        "order": 6,
+        "frequency_hz": 180000,
+        "vpp_mv": 18,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 119.91643661317116,
+      "true_rms_mv": 37.66463858846916,
+      "fundamental_hz": 30000,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 30000,
+          "amplitude_peak_mv": 52.5
+        },
+        {
+          "harmonic": "H6",
+          "frequency_hz": 180000,
+          "amplitude_peak_mv": 9.0
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 119.91643661317116,
+      "true_rms_mv": 37.66463858846916
+    }
+  },
+  {
+    "id": "13_ua_h2_h6",
+    "title": "偶次组合：H2 + H6",
+    "type": "ua",
+    "note": "两根偶次谐波，检查波形正负峰不对称时的 Upp。",
+    "fundamental_hz": 30000,
+    "period_us": 33.333333333333336,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 30000,
+        "vpp_mv": 145,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H2",
+        "order": 2,
+        "frequency_hz": 60000,
+        "vpp_mv": 32,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H6",
+        "order": 6,
+        "frequency_hz": 180000,
+        "vpp_mv": 22,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 178.21997474294454,
+      "true_rms_mv": 53.07188521241732,
+      "fundamental_hz": 30000,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 30000,
+          "amplitude_peak_mv": 72.5
+        },
+        {
+          "harmonic": "H2",
+          "frequency_hz": 60000,
+          "amplitude_peak_mv": 16.0
+        },
+        {
+          "harmonic": "H6",
+          "frequency_hz": 180000,
+          "amplitude_peak_mv": 11.0
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 178.21997474294454,
+      "true_rms_mv": 53.07188521241732
+    }
+  },
+  {
+    "id": "14_ua_weak_h7",
+    "title": "ua 弱七次谐波",
+    "type": "ua",
+    "note": "H7 谱线幅值仅 4 mV，接近题目允许的 ±5 mV 误差。",
+    "fundamental_hz": 20000,
+    "period_us": 50.0,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 20000,
+        "vpp_mv": 118,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H7",
+        "order": 7,
+        "frequency_hz": 140000,
+        "vpp_mv": 8,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 117.0355886498254,
+      "true_rms_mv": 41.81506905411015,
+      "fundamental_hz": 20000,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 20000,
+          "amplitude_peak_mv": 59.0
+        },
+        {
+          "harmonic": "H7",
+          "frequency_hz": 140000,
+          "amplitude_peak_mv": 4.0
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 117.0355886498254,
+      "true_rms_mv": 41.81506905411015
+    }
+  },
+  {
+    "id": "15_ub_h2_h4",
+    "title": "ub 偶次组合：H2 + H4",
+    "type": "ub",
+    "note": "H4=400 kHz，覆盖 ub 中高频偶次谱线。",
+    "fundamental_hz": 100000,
+    "period_us": 10.0,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 100000,
+        "vpp_mv": 100,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H2",
+        "order": 2,
+        "frequency_hz": 200000,
+        "vpp_mv": 40,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H4",
+        "order": 4,
+        "frequency_hz": 400000,
+        "vpp_mv": 25,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 112.23818853083458,
+      "true_rms_mv": 39.091239427779726,
+      "fundamental_hz": 100000,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 100000,
+          "amplitude_peak_mv": 50.0
+        },
+        {
+          "harmonic": "H2",
+          "frequency_hz": 200000,
+          "amplitude_peak_mv": 20.0
+        },
+        {
+          "harmonic": "H4",
+          "frequency_hz": 400000,
+          "amplitude_peak_mv": 12.5
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 112.23818853083458,
+      "true_rms_mv": 39.091239427779726
+    }
+  },
+  {
+    "id": "16_ub_h3_h6",
+    "title": "ub 高频组合：H3 + H6",
+    "type": "ub",
+    "note": "H6=480 kHz，贴近 ub 的 500 kHz 频率上限。",
+    "fundamental_hz": 80000,
+    "period_us": 12.5,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 80000,
+        "vpp_mv": 160,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H3",
+        "order": 3,
+        "frequency_hz": 240000,
+        "vpp_mv": 35,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H6",
+        "order": 6,
+        "frequency_hz": 480000,
+        "vpp_mv": 25,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 163.50211231025236,
+      "true_rms_mv": 58.57687256929991,
+      "fundamental_hz": 80000,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 80000,
+          "amplitude_peak_mv": 80.0
+        },
+        {
+          "harmonic": "H3",
+          "frequency_hz": 240000,
+          "amplitude_peak_mv": 17.5
+        },
+        {
+          "harmonic": "H6",
+          "frequency_hz": 480000,
+          "amplitude_peak_mv": 12.5
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 163.50211231025236,
+      "true_rms_mv": 58.57687256929991
+    }
+  },
+  {
+    "id": "17_ub_h4_h7",
+    "title": "ub 宽间隔组合：H4 + H7",
+    "type": "ub",
+    "note": "H7=490 kHz；低幅度下检查宽间隔谱线。",
+    "fundamental_hz": 70000,
+    "period_us": 14.285714285714286,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 70000,
+        "vpp_mv": 70,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H4",
+        "order": 4,
+        "frequency_hz": 280000,
+        "vpp_mv": 15,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H7",
+        "order": 7,
+        "frequency_hz": 490000,
+        "vpp_mv": 10,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 88.91036260090294,
+      "true_rms_mv": 25.556310375326092,
+      "fundamental_hz": 70000,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 70000,
+          "amplitude_peak_mv": 35.0
+        },
+        {
+          "harmonic": "H4",
+          "frequency_hz": 280000,
+          "amplitude_peak_mv": 7.5
+        },
+        {
+          "harmonic": "H7",
+          "frequency_hz": 490000,
+          "amplitude_peak_mv": 5.0
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 88.91036260090294,
+      "true_rms_mv": 25.556310375326092
+    }
+  },
+  {
+    "id": "18_ub_single_h3",
+    "title": "单谐波专项：H3",
+    "type": "ub",
+    "note": "高基频案例，H3=450 kHz。",
+    "fundamental_hz": 150000,
+    "period_us": 6.666666666666667,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 150000,
+        "vpp_mv": 95,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H3",
+        "order": 3,
+        "frequency_hz": 450000,
+        "vpp_mv": 30,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 88.41278746656431,
+      "true_rms_mv": 35.22250700901343,
+      "fundamental_hz": 150000,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 150000,
+          "amplitude_peak_mv": 47.5
+        },
+        {
+          "harmonic": "H3",
+          "frequency_hz": 450000,
+          "amplitude_peak_mv": 15.0
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 88.41278746656431,
+      "true_rms_mv": 35.22250700901343
+    }
+  },
+  {
+    "id": "19_ub_single_h4",
+    "title": "单谐波专项：H4",
+    "type": "ub",
+    "note": "较高幅度与 H4=480 kHz 的组合。",
+    "fundamental_hz": 120000,
+    "period_us": 8.333333333333334,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 120000,
+        "vpp_mv": 200,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H4",
+        "order": 4,
+        "frequency_hz": 480000,
+        "vpp_mv": 35,
+        "phase_deg": 0,
+        "role": "被测"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 223.73805193549225,
+      "true_rms_mv": 71.78527007680614,
+      "fundamental_hz": 120000,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 120000,
+          "amplitude_peak_mv": 100.0
+        },
+        {
+          "harmonic": "H4",
+          "frequency_hz": 480000,
+          "amplitude_peak_mv": 17.5
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 223.73805193549225,
+      "true_rms_mv": 71.78527007680614
+    }
+  },
+  {
+    "id": "20_ub_interference_1p2m",
+    "title": "H8 模拟 1.2 MHz 干扰",
+    "type": "ub+uJ",
+    "note": "第二组抗干扰案例：H8=1.2 MHz、200 mVpp；期望读数只针对 H1+H2+H3。",
+    "fundamental_hz": 150000,
+    "period_us": 6.666666666666667,
+    "source_settings": [
+      {
+        "harmonic": "H1",
+        "order": 1,
+        "frequency_hz": 150000,
+        "vpp_mv": 105,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H2",
+        "order": 2,
+        "frequency_hz": 300000,
+        "vpp_mv": 30,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H3",
+        "order": 3,
+        "frequency_hz": 450000,
+        "vpp_mv": 18,
+        "phase_deg": 0,
+        "role": "被测"
+      },
+      {
+        "harmonic": "H8",
+        "order": 8,
+        "frequency_hz": 1200000,
+        "vpp_mv": 200,
+        "phase_deg": 0,
+        "role": "干扰"
+      }
+    ],
+    "expected": {
+      "vpp_mv": 119.17246275489106,
+      "true_rms_mv": 39.129592382236744,
+      "fundamental_hz": 150000,
+      "spectrum": [
+        {
+          "harmonic": "H1",
+          "frequency_hz": 150000,
+          "amplitude_peak_mv": 52.5
+        },
+        {
+          "harmonic": "H2",
+          "frequency_hz": 300000,
+          "amplitude_peak_mv": 15.0
+        },
+        {
+          "harmonic": "H3",
+          "frequency_hz": 450000,
+          "amplitude_peak_mv": 9.0
+        }
+      ]
+    },
+    "whole_input_reference": {
+      "vpp_mv": 318.54419210343104,
+      "true_rms_mv": 80.81537601224163
+    }
+  }
+]
