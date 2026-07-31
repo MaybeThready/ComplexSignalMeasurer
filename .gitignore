@@ -28,3 +28,4 @@ fpga/simulation
 usart_sig/
 cb_output/
 *.xlsx
+**/__pycache__

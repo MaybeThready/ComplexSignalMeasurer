@@ -1,6 +1,7 @@
 #include "signal.h"
 #include "arm_math.h"
 #include "calibration.h"
+#include "ui_config.h"
 
 #define SAMPLE_RATE (1024.0f) // kHz
 #define NOISE_GATE (3.0f)
@@ -158,10 +159,30 @@ void signal_update_result()
             // signal_harmonics[i].freq = base_freq * signal_harmonics[i].order;
             signal_harmonics[i].freq = harmonic_freqs[i];
 
-            signal_harmonics[i].amp =
-                calibrate_harmonic_peak_mv(
-                    harmonic_amp[i],
-                    harmonic_freqs[i]);
+            // signal_harmonics[i].amp =
+            //             calibrate_harmonic_peak_mv(
+            //                 harmonic_amp[i],
+            //                 harmonic_freqs[i]);
+
+            // 校准算法应用处
+            if (is_fix_calibrate_on)
+            {
+                signal_harmonics[i].amp =
+                    calibrate_harmonic_peak_mv(
+                        harmonic_amp[i],
+                        harmonic_freqs[i]);
+            }
+            else
+            {
+                signal_harmonics[i].amp = harmonic_amp[i];
+            }
+
+            if (is_dyn_calibrate_on)
+            {
+                signal_harmonics[i].amp = calibrate_k * signal_harmonics[i].amp + calibrate_b / 2.0f;
+            }
+
+            // signal_harmonics[i].amp = signal_harmonics[i].amp < 5.0f ? 5.0f : (signal_harmonics[i].amp > 125.0f ? 125.0f : signal_harmonics[i].amp);
 
             signal_vrms +=
                 signal_harmonics[i].amp *

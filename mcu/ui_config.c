@@ -2,84 +2,159 @@
 #include "ui/ui.h"
 #include "bsp/msp_sys.h"
 #include <stdio.h>
-#include "signal.h"
+
+#define N_DATA (200)
 
 static UIApp ui;
-static UIPage main_page;
+static UIPage calibrate_page;
+static UIPage data_page;
 
-const char* vmax_text_provider(char* buffer, size_t size)
+bool is_fix_calibrate_on = true;
+bool is_dyn_calibrate_on = false;
+
+uint8_t current_data_index = 0;
+float current_measurement = 0.0f;
+float current_truth = 0.0f;
+float calibrate_k = 1.0f;
+float calibrate_b = 0.0f;
+uint8_t calibrate_n = 0;
+
+typedef struct
 {
-    snprintf(buffer, size, "%.3f", signal_vmax);
+    float meas;
+    float truth;
+    bool enable;
+} CalibrateData;
+
+CalibrateData cbd[N_DATA] = { 0 };
+
+static void add_data(UIApp* app, UIItem* item)
+{
+    if (current_data_index >= 0 && current_data_index < N_DATA)
+    {
+        cbd[current_data_index].enable = true;
+        cbd[current_data_index].meas = current_measurement;
+        cbd[current_data_index].truth = current_truth;
+    }
+}
+
+static void delete_data(UIApp* app, UIItem* item)
+{
+    if (current_data_index >= 0 && current_data_index < N_DATA)
+    {
+        cbd[current_data_index].enable = false;
+        cbd[current_data_index].meas = current_measurement;
+        cbd[current_data_index].truth = current_truth;
+    }
+}
+
+static const char* get_meas_text(char* buffer, size_t size)
+{
+    if (current_data_index >= 0 && current_data_index < N_DATA)
+    {
+        if (cbd[current_data_index].enable)
+        {
+            snprintf(buffer, size, "%.3fmV", cbd[current_data_index].meas);
+            return buffer;
+        }
+    }
+
+    snprintf(buffer, size, "--- mV");
     return buffer;
 }
 
-const char* vmin_text_provider(char* buffer, size_t size)
+static const char* get_truth_text(char* buffer, size_t size)
 {
-    snprintf(buffer, size, "%.3f", signal_vmin);
+    if (current_data_index >= 0 && current_data_index < N_DATA)
+    {
+        if (cbd[current_data_index].enable)
+        {
+            snprintf(buffer, size, "%.3fmV", cbd[current_data_index].truth);
+            return buffer;
+        }
+    }
+
+    snprintf(buffer, size, "--- mV");
     return buffer;
 }
 
-const char* vpp_text_provider(char* buffer, size_t size)
+static void calculate_data(UIApp* app, UIItem* item)
 {
-    snprintf(buffer, size, "%.3f", signal_vpp);
+    float sum_x = 0.0f;
+    float sum_y = 0.0f;
+    float sum_xy = 0.0f;
+    float sum_x2 = 0.0f;
+    calibrate_n = 0;
+    for (size_t i = 0; i < N_DATA; i++)
+    {
+        if (cbd[i].enable)
+        {
+            calibrate_n++;
+            sum_x += cbd[i].meas;
+            sum_y += cbd[i].truth;
+            sum_xy += cbd[i].meas * cbd[i].truth;
+            sum_x2 += cbd[i].meas * cbd[i].meas;
+        }
+    }
+
+    if (calibrate_n == 0)
+    {
+        calibrate_k = 1.0f;
+        calibrate_b = 0.0f;
+        return;
+    }
+
+    float mean_x = sum_x / calibrate_n;
+    float mean_y = sum_y / calibrate_n;
+
+    float k_div = sum_x2 - calibrate_n * mean_x * mean_x;
+    if (fabs(k_div) < 0.00001)
+    {
+        calibrate_k = 1.0f;
+        calibrate_b = 0.0f;
+        return;
+    }
+    calibrate_k = (sum_xy - calibrate_n * mean_x * mean_y) / k_div;
+    calibrate_b = mean_y - calibrate_k * mean_x;
+}
+
+static const char* get_n_text(char* buffer, size_t size)
+{
+    snprintf(buffer, size, "%d", calibrate_n);
     return buffer;
 }
 
-const char* vrms_text_provider(char* buffer, size_t size)
+static const char* get_k_text(char* buffer, size_t size)
 {
-    snprintf(buffer, size, "%.3f", signal_vrms);
+    snprintf(buffer, size, "%.3f", calibrate_k);
     return buffer;
 }
 
-const char* h1_text_provider(char* buffer, size_t size)
+static const char* get_b_text(char* buffer, size_t size)
 {
-    if (signal_harmonics[0].valid)
-    {
-        snprintf(buffer, size, "%d,%.1f,%.1f", signal_harmonics[0].order, signal_harmonics[0].freq, signal_harmonics[0].amp);
-    }
-    else
-    {
-        snprintf(buffer, size, "N/A");
-    }
-    return buffer;
-}
-
-const char* h2_text_provider(char* buffer, size_t size)
-{
-    if (signal_harmonics[1].valid)
-    {
-        snprintf(buffer, size, "%d,%.1f,%.1f", signal_harmonics[1].order, signal_harmonics[1].freq, signal_harmonics[1].amp);
-    }
-    else
-    {
-        snprintf(buffer, size, "N/A");
-    }
-    return buffer;
-}
-
-const char* h3_text_provider(char* buffer, size_t size)
-{
-    if (signal_harmonics[2].valid)
-    {
-        snprintf(buffer, size, "%d,%.1f,%.1f", signal_harmonics[2].order, signal_harmonics[2].freq, signal_harmonics[2].amp);
-    }
-    else
-    {
-        snprintf(buffer, size, "N/A");
-    }
+    snprintf(buffer, size, "%.3f", calibrate_b);
     return buffer;
 }
 
 static void build_pages()
 {
-    ui_page_init(&main_page, "Debug");
-    ui_page_add_dynamic_text(&main_page, "Vmax", vmax_text_provider);
-    ui_page_add_dynamic_text(&main_page, "Vmin", vmin_text_provider);
-    ui_page_add_dynamic_text(&main_page, "Vpp", vpp_text_provider);
-    ui_page_add_dynamic_text(&main_page, "Vrms", vrms_text_provider);
-    ui_page_add_dynamic_text(&main_page, "H1", h1_text_provider);
-    ui_page_add_dynamic_text(&main_page, "H2", h2_text_provider);
-    ui_page_add_dynamic_text(&main_page, "H3", h3_text_provider);
+    ui_page_init(&data_page, "Calibrate Data");
+    ui_page_add_number_typed(&data_page, "Data Index", &current_data_index, UI_NUMBER_UINT8, 0, N_DATA - 1, 1, 0, "", NULL);
+    ui_page_add_dynamic_text(&data_page, "CMeas", get_meas_text);
+    ui_page_add_dynamic_text(&data_page, "CTruth", get_truth_text);
+    ui_page_add_number_typed(&data_page, "IMeas", &current_measurement, UI_NUMBER_FLOAT, 0.0f, 250.0f, 0.001f, 3, "mV", NULL);
+    ui_page_add_number_typed(&data_page, "ITruth", &current_truth, UI_NUMBER_FLOAT, 0.0f, 250.0f, 0.001f, 3, "mV", NULL);
+    ui_page_add_action(&data_page, "Add", add_data);
+    ui_page_add_action(&data_page, "Delete", delete_data);
+
+    ui_page_init(&calibrate_page, "Calibrate");
+    ui_page_add_toggle(&calibrate_page, "Fix Calibrate", &is_fix_calibrate_on, NULL);
+    ui_page_add_toggle(&calibrate_page, "Dynamic Calibrate", &is_dyn_calibrate_on, NULL);
+    ui_page_add_dynamic_text(&calibrate_page, "Valid Data Cnt", get_n_text);
+    ui_page_add_dynamic_text(&calibrate_page, "k", get_k_text);
+    ui_page_add_dynamic_text(&calibrate_page, "b", get_b_text);
+    ui_page_add_link(&calibrate_page, "Calibrate Data", &data_page);
+    ui_page_add_action(&calibrate_page, "Calculate", calculate_data);
 }
 
 void init_app_ui()
@@ -88,7 +163,7 @@ void init_app_ui()
 
     build_pages();
     ui_keys_use_default_4x4(&keys);
-    ui_init(&ui, &main_page, &keys);
+    ui_init(&ui, &calibrate_page, &keys);
 }
 
 void app_ui_update()

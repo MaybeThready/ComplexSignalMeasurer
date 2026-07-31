@@ -44,7 +44,7 @@ from rich.table import Table
 from scipy.stats import t as student_t
 
 
-APP_VERSION = "2.0"
+APP_VERSION = "3.0"
 RANDOM_SEED = 42
 EPS = np.finfo(float).eps
 console = Console(highlight=False)
@@ -320,6 +320,10 @@ class ModelSpec:
     def is_lookup(self) -> bool:
         return self.kind == "lookup"
 
+    @property
+    def is_hybrid_lookup(self) -> bool:
+        return self.kind == "hybrid_lookup"
+
 
 G0 = Term("g0")
 GF1 = Term("g_f1", frequency_power=1)
@@ -338,6 +342,13 @@ MODELS: tuple[ModelSpec, ...] = (
         (),
         "各校准频率独立估计增益，频率结点之间线性插值",
         "lookup",
+    ),
+    ModelSpec(
+        "frequency_gain_amplitude_quintic",
+        "分频率增益+平滑幅值修正",
+        (),
+        "分频率增益线性插值，并以共享三次、五次奇函数修正小幅非线性",
+        "hybrid_lookup",
     ),
     ModelSpec(
         "linear_frequency_gain",
@@ -408,7 +419,7 @@ def design_matrix(
     f = np.asarray(frequency, dtype=float)
     if spec.is_identity:
         return np.empty((len(x), 0), dtype=float)
-    if spec.is_lookup:
+    if spec.is_lookup or spec.is_hybrid_lookup:
         raise ValueError("分频率查表模型没有固定设计矩阵。")
     u = (f - normalization.frequency_center_khz) / normalization.frequency_scale_khz
     z = x / normalization.voltage_scale_mv
@@ -448,6 +459,25 @@ def fit_coefficients(
         packed[1::2] = gains
         condition = float(np.sqrt(np.max(energy) / np.min(energy)))
         return packed, int(len(knots)), condition
+    if spec.is_hybrid_lookup:
+        knots = np.sort(np.unique(frequency))
+        if len(knots) < 2:
+            raise ValueError("混合查表模型至少需要两个不同频率。")
+        z = vpp_meas / normalization.voltage_scale_mv
+        matrix = np.zeros((len(vpp_meas), len(knots) + 2), dtype=float)
+        for index, knot in enumerate(knots):
+            selected = frequency == knot
+            matrix[selected, index] = vpp_meas[selected]
+        matrix[:, -2] = vpp_meas * z**2
+        matrix[:, -1] = vpp_meas * z**4
+        solved, _, rank, singular_values = np.linalg.lstsq(matrix, vpp_true, rcond=None)
+        if rank < matrix.shape[1]:
+            raise ValueError("混合查表模型设计矩阵秩不足。")
+        packed = np.concatenate(
+            ([float(len(knots))], knots, solved[: len(knots)], solved[-2:])
+        )
+        condition = float(singular_values[0] / singular_values[-1])
+        return packed, int(rank), condition
     matrix = design_matrix(vpp_meas, frequency, spec, normalization)
     if len(vpp_true) <= spec.parameter_count:
         raise ValueError("样本数不足以估计模型参数。")
@@ -456,8 +486,7 @@ def fit_coefficients(
     )
     if rank < spec.parameter_count:
         raise ValueError(
-            f"设计矩阵秩不足（{rank}/{spec.parameter_count}），"
-            "当前数据无法辨识该模型。"
+            f"设计矩阵秩不足（{rank}/{spec.parameter_count}），当前数据无法辨识该模型。"
         )
     condition = (
         float(singular_values[0] / singular_values[-1])
@@ -491,6 +520,16 @@ def lookup_gain(
     return interpolated
 
 
+def unpack_hybrid_coefficients(
+    packed_coefficients: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray, float, float]:
+    count = int(round(float(packed_coefficients[0])))
+    knots = packed_coefficients[1 : 1 + count]
+    gains = packed_coefficients[1 + count : 1 + 2 * count]
+    amplitude_cubic, amplitude_quintic = packed_coefficients[-2:]
+    return knots, gains, float(amplitude_cubic), float(amplitude_quintic)
+
+
 def predict(
     spec: ModelSpec,
     coefficients: np.ndarray,
@@ -503,6 +542,17 @@ def predict(
         return x.copy()
     if spec.is_lookup:
         return x * lookup_gain(np.asarray(frequency, dtype=float), coefficients)
+    if spec.is_hybrid_lookup:
+        knots, gains, cubic, quintic = unpack_hybrid_coefficients(coefficients)
+        interleaved = np.empty(2 * len(knots), dtype=float)
+        interleaved[0::2] = knots
+        interleaved[1::2] = gains
+        z = x / normalization.voltage_scale_mv
+        return x * (
+            lookup_gain(np.asarray(frequency, dtype=float), interleaved)
+            + cubic * z**2
+            + quintic * z**4
+        )
     return design_matrix(x, frequency, spec, normalization) @ coefficients
 
 
@@ -580,6 +630,42 @@ def lookup_coefficient_rows(
             }
         )
     return rows, "各频率过原点 OLS 近似 95% CI"
+
+
+def hybrid_coefficient_rows(
+    packed_coefficients: np.ndarray,
+) -> tuple[list[dict[str, float | str]], str]:
+    knots, gains, cubic, quintic = unpack_hybrid_coefficients(packed_coefficients)
+    rows: list[dict[str, float | str]] = [
+        {
+            "name": f"gain_{knot:g}_kHz",
+            "factor": f"f={knot:g} kHz 基础增益结点",
+            "frequency_khz": float(knot),
+            "value": float(gain),
+            "ci95_low": None,
+            "ci95_high": None,
+        }
+        for knot, gain in zip(knots, gains)
+    ]
+    rows.extend(
+        [
+            {
+                "name": "g_a2",
+                "factor": "z^2（共享）",
+                "value": cubic,
+                "ci95_low": None,
+                "ci95_high": None,
+            },
+            {
+                "name": "g_a4",
+                "factor": "z^4（共享）",
+                "value": quintic,
+                "ci95_low": None,
+                "ci95_high": None,
+            },
+        ]
+    )
+    return rows, "联合最小二乘点估计；交叉验证用于评估系数整体稳定性"
 
 
 # --------------------------- 评估与交叉验证 ---------------------------
@@ -744,6 +830,24 @@ def evaluate_models(
                 splits,
             )
             cv_metrics = calculate_metrics(vpp_true, oof) if oof is not None else None
+            # 频率留组验证回答“未校准频点如何插值”，但无法发现幅值高阶项
+            # 对标定点的过拟合。再做一次按参考幅值整组留出，两种外推风险分开报告。
+            amplitude_splits = []
+            for value in np.sort(np.unique(vpp_true)):
+                amplitude_test = np.flatnonzero(vpp_true == value)
+                amplitude_train = np.flatnonzero(vpp_true != value)
+                amplitude_splits.append(
+                    (amplitude_train, amplitude_test, f"{value:g} mV Vpp")
+                )
+            amplitude_oof, amplitude_fold_rows = cross_validate_model(
+                spec,
+                vpp_meas,
+                frequency,
+                vpp_true,
+                normalization,
+                amplitude_splits,
+            )
+            amplitude_cv_metrics = calculate_metrics(vpp_true, amplitude_oof)
             fold_rmse = np.array([row["rmse_mv"] for row in fold_rows], dtype=float)
             fold_summary = (
                 {
@@ -761,11 +865,17 @@ def evaluate_models(
                 else None
             )
             residuals = fitted - vpp_true
-            parameter_count = rank if spec.is_lookup else spec.parameter_count
+            parameter_count = (
+                rank
+                if spec.is_lookup or spec.is_hybrid_lookup
+                else spec.parameter_count
+            )
             if spec.is_lookup:
                 coefficient_rows, ci_method = lookup_coefficient_rows(
                     vpp_meas, frequency, vpp_true, coefficients
                 )
+            elif spec.is_hybrid_lookup:
+                coefficient_rows, ci_method = hybrid_coefficient_rows(coefficients)
             else:
                 matrix = design_matrix(vpp_meas, frequency, spec, normalization)
                 ci_low_delta, ci_high_delta, ci_method = (
@@ -798,6 +908,9 @@ def evaluate_models(
                 "fit_metrics": fit_metrics,
                 "oof_prediction": oof,
                 "cv_metrics": cv_metrics,
+                "amplitude_oof_prediction": amplitude_oof,
+                "amplitude_cv_metrics": amplitude_cv_metrics,
+                "amplitude_fold_rows": amplitude_fold_rows,
                 "fold_rows": fold_rows,
                 "fold_summary": fold_summary,
                 **information_criteria(vpp_true, fitted, parameter_count),
@@ -818,8 +931,14 @@ def select_recommended_model(
         if value["fold_summary"] is not None
     ]
     if with_cv:
+        # 主排序仍采用更苛刻的频率留组误差；幅值留组 RMSE 作为第二目标，
+        # 防止高阶非线性项仅仅记住本表的 12 个幅值等级。
         best_key, best = min(
-            with_cv, key=lambda item: item[1]["fold_summary"]["rmse_mean_mv"]
+            with_cv,
+            key=lambda item: (
+                item[1]["fold_summary"]["rmse_mean_mv"],
+                item[1]["amplitude_cv_metrics"]["rmse_mv"],
+            ),
         )
         threshold = (
             best["fold_summary"]["rmse_mean_mv"] + best["fold_summary"]["rmse_se_mv"]
@@ -836,15 +955,45 @@ def select_recommended_model(
                 item[1]["fold_summary"]["rmse_mean_mv"],
             ),
         )
+        baseline_lookup = results.get("frequency_gain_lookup")
+        hybrid_lookup = results.get("frequency_gain_amplitude_quintic")
+        hybrid_selected = False
+        if baseline_lookup is not None and hybrid_lookup is not None:
+            fit_ratio = (
+                hybrid_lookup["fit_metrics"]["rmse_mv"]
+                / baseline_lookup["fit_metrics"]["rmse_mv"]
+            )
+            frequency_ratio = (
+                hybrid_lookup["cv_metrics"]["rmse_mv"]
+                / baseline_lookup["cv_metrics"]["rmse_mv"]
+            )
+            amplitude_ratio = (
+                hybrid_lookup["amplitude_cv_metrics"]["rmse_mv"]
+                / baseline_lookup["amplitude_cv_metrics"]["rmse_mv"]
+            )
+            # 只有训练误差显著下降，且两种留组验证均没有实质退化时，
+            # 才允许两个共享幅值项替代纯增益查表。
+            if (
+                fit_ratio <= 0.80
+                and frequency_ratio <= 1.02
+                and amplitude_ratio <= 1.02
+            ):
+                recommended_key = "frequency_gain_amplitude_quintic"
+                recommended = hybrid_lookup
+                hybrid_selected = True
         selection = {
-            "criterion": "交叉验证 RMSE 的一标准误差规则",
+            "criterion": "频率留组 CV 一标准误差规则，并以幅值留组 CV 防止过拟合",
             "lowest_cv_model": best["spec"].name,
             "lowest_cv_fold_rmse_mean_mv": best["fold_summary"]["rmse_mean_mv"],
             "one_standard_error_threshold_mv": threshold,
             "eligible_models": [value["spec"].name for _, value in eligible],
+            "amplitude_holdout_rmse_mv": recommended["amplitude_cv_metrics"]["rmse_mv"],
+            "hybrid_pareto_override": hybrid_selected,
             "reason": (
                 "先找平均验证 RMSE 最低的模型，再在其一个标准误差范围内"
-                "选择参数最少者，以降低过拟合风险。"
+                "选择参数最少者；同时整组留出每个参考幅值，检查幅值非线性项"
+                "是否只是在记忆校准表。若共享幅值修正使拟合 RMSE 至少降低 20%，"
+                "且两类留组 RMSE 均不恶化超过 2%，则采用该修正。"
             ),
         }
         return recommended_key, selection
@@ -903,6 +1052,21 @@ def model_formula(
                 "或逐采样点波形失真。"
             ),
         }
+    if spec.is_hybrid_lookup:
+        knots, gains, cubic, quintic = unpack_hybrid_coefficients(coefficients)
+        pairs = ", ".join(
+            f"{frequency:g}:{gain:.12g}" for frequency, gain in zip(knots, gains)
+        )
+        return {
+            "definitions": (
+                "g(f) 在频率结点间线性插值；"
+                f"z=Vmeas/{normalization.voltage_scale_mv:.12g}；"
+                f"g_a2={cubic:.12g}，g_a4={quintic:.12g}；结点：{pairs}"
+            ),
+            "vpp": "Vcal = Vmeas * (g(f_kHz) + g_a2*z^2 + g_a4*z^4)",
+            "instantaneous": "vout = vin * (g(f_kHz) + g_a2*q^2 + g_a4*q^4)，q=2*vin/Vscale",
+            "note": "共享幅值项保持零点对称；当前 Vpp 数据不能验证相位或波形失真。",
+        }
     bracket = signed_expression(coefficients, spec.terms)
     if spec.is_identity:
         bracket = "1"
@@ -941,6 +1105,19 @@ def check_instantaneous_monotonicity(
     if spec.is_lookup:
         gains = coefficients[1::2]
         minimum = float(np.min(gains))
+        return {
+            "monotonic_on_calibration_domain": bool(minimum > 0.0),
+            "minimum_derivative": minimum,
+        }
+    if spec.is_hybrid_lookup:
+        _, gains, cubic, quintic = unpack_hybrid_coefficients(coefficients)
+        q = np.linspace(-1.0, 1.0, 1001)
+        derivative = (
+            gains[:, None]
+            + 3.0 * cubic * q[None, :] ** 2
+            + 5.0 * quintic * q[None, :] ** 4
+        )
+        minimum = float(np.min(derivative))
         return {
             "monotonic_on_calibration_domain": bool(minimum > 0.0),
             "minimum_derivative": minimum,
@@ -1001,8 +1178,8 @@ def build_lookup_c_header(
  * 自动生成的 Vpp 校准模型
  * 模型：{spec.name}
  * 源数据 SHA-256：{source_hash}
- * 有效范围：Vpp {ranges['voltage_min_mv']:.9g}~{ranges['voltage_max_mv']:.9g} mV，
- *           f {ranges['frequency_min_khz']:.9g}~{ranges['frequency_max_khz']:.9g} kHz
+ * 有效范围：Vpp {ranges["voltage_min_mv"]:.9g}~{ranges["voltage_max_mv"]:.9g} mV，
+ *           f {ranges["frequency_min_khz"]:.9g}~{ranges["frequency_max_khz"]:.9g} kHz
  *
  * 结点间使用线性插值。范围外未经验证；调用者应先执行范围检查。
  */
@@ -1011,10 +1188,10 @@ def build_lookup_c_header(
 
 #include <stdbool.h>
 
-#define CB_VOLTAGE_MIN_MV ({ranges['voltage_min_mv']:.9e}f)
-#define CB_VOLTAGE_MAX_MV ({ranges['voltage_max_mv']:.9e}f)
-#define CB_FREQUENCY_MIN_KHZ ({ranges['frequency_min_khz']:.9e}f)
-#define CB_FREQUENCY_MAX_KHZ ({ranges['frequency_max_khz']:.9e}f)
+#define CB_VOLTAGE_MIN_MV ({ranges["voltage_min_mv"]:.9e}f)
+#define CB_VOLTAGE_MAX_MV ({ranges["voltage_max_mv"]:.9e}f)
+#define CB_FREQUENCY_MIN_KHZ ({ranges["frequency_min_khz"]:.9e}f)
+#define CB_FREQUENCY_MAX_KHZ ({ranges["frequency_max_khz"]:.9e}f)
 #define CB_GAIN_KNOT_COUNT ({len(knots)}u)
 
 static const float CB_FREQUENCY_KNOTS_KHZ[CB_GAIN_KNOT_COUNT] = {{
@@ -1081,14 +1258,97 @@ def build_c_header(
 ) -> str:
     if spec.is_lookup:
         return build_lookup_c_header(spec, coefficients, ranges, source_hash)
+    if spec.is_hybrid_lookup:
+        knots, gains, cubic, quintic = unpack_hybrid_coefficients(coefficients)
+        knot_values = ", ".join(f"{value:.9e}f" for value in knots)
+        gain_values = ", ".join(f"{value:.9e}f" for value in gains)
+        return f"""/*
+ * 自动生成的 Vpp 校准模型
+ * 模型：{spec.name}
+ * 源数据 SHA-256：{source_hash}
+ * 有效范围：Vpp {ranges["voltage_min_mv"]:.9g}~{ranges["voltage_max_mv"]:.9g} mV，
+ *           f {ranges["frequency_min_khz"]:.9g}~{ranges["frequency_max_khz"]:.9g} kHz
+ * 接口与旧版保持一致；signal.c 可直接替换使用。
+ */
+#ifndef CB_CALIBRATION_MODEL_H
+#define CB_CALIBRATION_MODEL_H
+
+#include <stdbool.h>
+
+#define CB_VOLTAGE_MIN_MV ({ranges["voltage_min_mv"]:.9e}f)
+#define CB_VOLTAGE_MAX_MV ({ranges["voltage_max_mv"]:.9e}f)
+#define CB_FREQUENCY_MIN_KHZ ({ranges["frequency_min_khz"]:.9e}f)
+#define CB_FREQUENCY_MAX_KHZ ({ranges["frequency_max_khz"]:.9e}f)
+#define CB_VOLTAGE_SCALE_MV ({normalization.voltage_scale_mv:.9e}f)
+#define CB_GAIN_KNOT_COUNT ({len(knots)}u)
+#define CB_AMPLITUDE_CUBIC ({cubic:.9e}f)
+#define CB_AMPLITUDE_QUINTIC ({quintic:.9e}f)
+
+static const float CB_FREQUENCY_KNOTS_KHZ[CB_GAIN_KNOT_COUNT] = {{
+    {knot_values}
+}};
+static const float CB_GAIN_KNOTS[CB_GAIN_KNOT_COUNT] = {{
+    {gain_values}
+}};
+
+static inline bool cb_calibration_in_range(float vpp_mv, float frequency_khz)
+{{
+    return vpp_mv >= CB_VOLTAGE_MIN_MV &&
+           vpp_mv <= CB_VOLTAGE_MAX_MV &&
+           frequency_khz >= CB_FREQUENCY_MIN_KHZ &&
+           frequency_khz <= CB_FREQUENCY_MAX_KHZ;
+}}
+
+static inline float cb_interpolated_gain(float frequency_khz)
+{{
+    unsigned int i;
+    if (frequency_khz <= CB_FREQUENCY_KNOTS_KHZ[0]) {{
+        return CB_GAIN_KNOTS[0];
+    }}
+    if (frequency_khz >= CB_FREQUENCY_KNOTS_KHZ[CB_GAIN_KNOT_COUNT - 1u]) {{
+        return CB_GAIN_KNOTS[CB_GAIN_KNOT_COUNT - 1u];
+    }}
+    for (i = 1u; i < CB_GAIN_KNOT_COUNT; ++i) {{
+        if (frequency_khz <= CB_FREQUENCY_KNOTS_KHZ[i]) {{
+            const float alpha = (frequency_khz - CB_FREQUENCY_KNOTS_KHZ[i - 1u]) /
+                                (CB_FREQUENCY_KNOTS_KHZ[i] - CB_FREQUENCY_KNOTS_KHZ[i - 1u]);
+            return CB_GAIN_KNOTS[i - 1u] +
+                   alpha * (CB_GAIN_KNOTS[i] - CB_GAIN_KNOTS[i - 1u]);
+        }}
+    }}
+    return CB_GAIN_KNOTS[CB_GAIN_KNOT_COUNT - 1u];
+}}
+
+static inline float cb_calibrate_vpp_mv(float vpp_mv, float frequency_khz)
+{{
+    const float z = vpp_mv / CB_VOLTAGE_SCALE_MV;
+    const float z2 = z * z;
+    const float gain = cb_interpolated_gain(frequency_khz) +
+                       CB_AMPLITUDE_CUBIC * z2 +
+                       CB_AMPLITUDE_QUINTIC * z2 * z2;
+    return vpp_mv * gain;
+}}
+
+static inline float cb_calibrate_sample_mv(float vin_mv, float frequency_khz)
+{{
+    const float q = (2.0f * vin_mv) / CB_VOLTAGE_SCALE_MV;
+    const float q2 = q * q;
+    const float gain = cb_interpolated_gain(frequency_khz) +
+                       CB_AMPLITUDE_CUBIC * q2 +
+                       CB_AMPLITUDE_QUINTIC * q2 * q2;
+    return vin_mv * gain;
+}}
+
+#endif /* CB_CALIBRATION_MODEL_H */
+"""
     vpp_expression = c_factor_expression(spec, coefficients, "z2")
     sample_expression = c_factor_expression(spec, coefficients, "q2")
     return f"""/*
  * 自动生成的 Vpp 校准模型
  * 模型：{spec.name}
  * 源数据 SHA-256：{source_hash}
- * 有效范围：Vpp {ranges['voltage_min_mv']:.9g}~{ranges['voltage_max_mv']:.9g} mV，
- *           f {ranges['frequency_min_khz']:.9g}~{ranges['frequency_max_khz']:.9g} kHz
+ * 有效范围：Vpp {ranges["voltage_min_mv"]:.9g}~{ranges["voltage_max_mv"]:.9g} mV，
+ *           f {ranges["frequency_min_khz"]:.9g}~{ranges["frequency_max_khz"]:.9g} kHz
  *
  * 注意：范围外属于未经验证的外推，本文件不自动钳位输入。
  */
@@ -1097,10 +1357,10 @@ def build_c_header(
 
 #include <stdbool.h>
 
-#define CB_VOLTAGE_MIN_MV ({ranges['voltage_min_mv']:.9e}f)
-#define CB_VOLTAGE_MAX_MV ({ranges['voltage_max_mv']:.9e}f)
-#define CB_FREQUENCY_MIN_KHZ ({ranges['frequency_min_khz']:.9e}f)
-#define CB_FREQUENCY_MAX_KHZ ({ranges['frequency_max_khz']:.9e}f)
+#define CB_VOLTAGE_MIN_MV ({ranges["voltage_min_mv"]:.9e}f)
+#define CB_VOLTAGE_MAX_MV ({ranges["voltage_max_mv"]:.9e}f)
+#define CB_FREQUENCY_MIN_KHZ ({ranges["frequency_min_khz"]:.9e}f)
+#define CB_FREQUENCY_MAX_KHZ ({ranges["frequency_max_khz"]:.9e}f)
 #define CB_VOLTAGE_SCALE_MV ({normalization.voltage_scale_mv:.9e}f)
 #define CB_FREQUENCY_CENTER_KHZ ({normalization.frequency_center_khz:.9e}f)
 #define CB_FREQUENCY_SCALE_KHZ ({normalization.frequency_scale_khz:.9e}f)
@@ -1158,6 +1418,7 @@ def model_comparison_dataframe(
         spec = result["spec"]
         fit = result["fit_metrics"]
         cv = result["cv_metrics"] or {}
+        amplitude_cv = result["amplitude_cv_metrics"]
         fold = result["fold_summary"] or {}
         reference_rmse = cv.get("rmse_mv", fit["rmse_mv"])
         rows.append(
@@ -1184,6 +1445,8 @@ def model_comparison_dataframe(
                 "CV误差小于等于2mV_percent": cv.get("within_2mv_percent"),
                 "CV误差小于等于5mV_percent": cv.get("within_5mv_percent"),
                 "CV_R2": cv.get("r2"),
+                "幅值留组CV_RMSE_mV": amplitude_cv["rmse_mv"],
+                "幅值留组CV_P95绝对误差_mV": amplitude_cv["p95_abs_error_mv"],
                 "折RMSE均值_mV": fold.get("rmse_mean_mv"),
                 "折RMSE标准误_mV": fold.get("rmse_se_mv"),
                 "相对未校准RMSE改善_percent": safe_percent(
@@ -2041,6 +2304,7 @@ def build_markdown_report(
         else "未发现超过局部一致性阈值的记录。"
     )
     fold = result["fold_summary"]
+    amplitude_validation = result["amplitude_cv_metrics"]
     fold_text = (
         f"各折 RMSE 均值 {fold['rmse_mean_mv']:.4f} ± "
         f"{fold['rmse_se_mv']:.4f} mV（均值 ± 标准误）"
@@ -2064,41 +2328,44 @@ def build_markdown_report(
 生成时间：{generated_at}  
 程序版本：{APP_VERSION}  
 输入文件：`{input_path}`  
-输入 SHA-256：`{audit['input_sha256']}`
+输入 SHA-256：`{audit["input_sha256"]}`
 
 ## 结论
 
-推荐模型：**{result['spec'].name}**。  
-选择方法：{selection['criterion']}。{selection['reason']}  
+推荐模型：**{result["spec"].name}**。<br>
+选择方法：{selection["criterion"]}。{selection["reason"]}<br>
 相对未校准基线，{evaluation_short} RMSE 改善
 **{format_number(improvement, 2)}%**。
 
-- 整表拟合：MAE {fit['mae_mv']:.4f} mV，RMSE {fit['rmse_mv']:.4f} mV，
-  R² {format_r2(fit['r2'])}。
-- {evaluation_label}：MAE {validation['mae_mv']:.4f} mV，
-  RMSE {validation['rmse_mv']:.4f} mV；{fold_text}。
+- 整表拟合：MAE {fit["mae_mv"]:.4f} mV，RMSE {fit["rmse_mv"]:.4f} mV，
+  R² {format_r2(fit["r2"])}。
+- {evaluation_label}：MAE {validation["mae_mv"]:.4f} mV，
+  RMSE {validation["rmse_mv"]:.4f} mV；{fold_text}。
 - {evaluation_short} P95 绝对误差
-  {validation['p95_abs_error_mv']:.4f} mV，最大绝对误差
-  {validation['max_abs_error_mv']:.4f} mV。
+  {validation["p95_abs_error_mv"]:.4f} mV，最大绝对误差
+  {validation["max_abs_error_mv"]:.4f} mV。
 - {evaluation_short}点中 |误差|≤1 mV 的比例为
-  {validation['within_1mv_percent']:.2f}%，|误差|≤2 mV 的比例为
-  {validation['within_2mv_percent']:.2f}%。
+  {validation["within_1mv_percent"]:.2f}%，|误差|≤2 mV 的比例为
+  {validation["within_2mv_percent"]:.2f}%。
+- 按参考幅值整组留出验证：RMSE {amplitude_validation["rmse_mv"]:.4f} mV，
+  P95 绝对误差 {amplitude_validation["p95_abs_error_mv"]:.4f} mV。该指标专门用于
+  识别高阶幅值项对现有幅值等级的过拟合。
 - 瞬时等效式在校准范围内的单调性检查：{monotonic_text}；
-  数值网格最小导数为 {monotonicity['minimum_derivative']:.6g}。
+  数值网格最小导数为 {monotonicity["minimum_derivative"]:.6g}。
 
 ## 数据覆盖与质量
 
-- 有效样本：{len(data)}；频率组：{data['频率'].nunique()}。
-- 测量 Vpp 范围：{ranges['voltage_min_mv']:.6g}–
-  {ranges['voltage_max_mv']:.6g} mV。
-- 真值 Vpp 范围：{ranges['truth_min_mv']:.6g}–
-  {ranges['truth_max_mv']:.6g} mV。
-- 频率范围：{ranges['frequency_min_khz']:.6g}–
-  {ranges['frequency_max_khz']:.6g} kHz。
-- 删除的全空行：{audit['blank_rows_removed']}；完全重复记录涉及
-  {audit['exact_duplicate_rows']} 行。
+- 有效样本：{len(data)}；频率组：{data["频率"].nunique()}。
+- 测量 Vpp 范围：{ranges["voltage_min_mv"]:.6g}–
+  {ranges["voltage_max_mv"]:.6g} mV。
+- 真值 Vpp 范围：{ranges["truth_min_mv"]:.6g}–
+  {ranges["truth_max_mv"]:.6g} mV。
+- 频率范围：{ranges["frequency_min_khz"]:.6g}–
+  {ranges["frequency_max_khz"]:.6g} kHz。
+- 删除的全空行：{audit["blank_rows_removed"]}；完全重复记录涉及
+  {audit["exact_duplicate_rows"]} 行。
 - CV 残差与同频局部一致性诊断共标记
-  {int(outlier_info['flagged_count'])} 点；
+  {int(outlier_info["flagged_count"])} 点；
   程序没有自动删除或重拟合这些点。
 
 ### 建议复核的记录
@@ -2112,15 +2379,15 @@ def build_markdown_report(
 零截距的奇函数等效形式：
 
 ```text
-{formula['definitions']}
-{formula['vpp']}
-{formula['instantaneous']}
+{formula["definitions"]}
+{formula["vpp"]}
+{formula["instantaneous"]}
 ```
 
 多项式候选先归一化，再以线性最小二乘一次求解；分频率插值候选在每个
 频率结点估计过原点增益，再作线性插值。验证策略为
-**{cv_description}**；{selection_method_text}系数区间使用
-{result['coefficient_ci_method']}。该区间反映回归系数稳定性，不是仪器计量
+**{cv_description}**；此外固定执行按参考幅值留一组验证。{selection_method_text}系数区间使用
+{result["coefficient_ci_method"]}。该区间反映回归系数稳定性，不是仪器计量
 不确定度。
 
 ## 模型比较
@@ -2142,7 +2409,7 @@ def build_markdown_report(
 
 1. 模型只在上述 Vpp 与频率覆盖范围内得到验证；范围外数值是外推。
 2. 当前数据只有 Vpp、频率和参考 Vpp，不能证明逐采样点波形已被正确恢复。
-   `{formula['note']}`
+   `{formula["note"]}`
 3. 交叉验证衡量“未见过该频率组”时的表现；整表拟合指标仅反映对当前校准表
    的复现程度。
 4. 若后续增加校准点，应重新运行本脚本并比较验证误差和分频率偏差，而不是
@@ -2333,6 +2600,8 @@ def save_outputs(
             "monotonicity_check": monotonicity,
             "fit_metrics": result["fit_metrics"],
             "cross_validation_metrics": result["cv_metrics"],
+            "amplitude_holdout_metrics": result["amplitude_cv_metrics"],
+            "amplitude_holdout_folds": result["amplitude_fold_rows"],
             "fold_summary": result["fold_summary"],
             "folds": result["fold_rows"],
         },

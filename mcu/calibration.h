@@ -1,28 +1,30 @@
 /*
  * 自动生成的 Vpp 校准模型
- * 模型：分频率增益线性插值
- * 源数据 SHA-256：3f4c64bfcce58cd3287d1a69967bd25a779079ac4eaa94953506514ee1db7136
- * 有效范围：Vpp 8.777~224.76 mV，
+ * 模型：分频率增益+平滑幅值修正
+ * 源数据 SHA-256：dc4ae18421309b45fb73d346e3d1ddeabbb1733eec36d99b5a75ffdae910d9a9
+ * 有效范围：Vpp 8.731~223.7 mV，
  *           f 10~500 kHz
- *
- * 结点间使用线性插值。范围外未经验证；调用者应先执行范围检查。
+ * 接口与旧版保持一致；signal.c 可直接替换使用。
  */
 #ifndef CB_CALIBRATION_MODEL_H
 #define CB_CALIBRATION_MODEL_H
 
 #include <stdbool.h>
 
-#define CB_VOLTAGE_MIN_MV (8.777000000e+00f)
-#define CB_VOLTAGE_MAX_MV (2.247600000e+02f)
+#define CB_VOLTAGE_MIN_MV (8.731000000e+00f)
+#define CB_VOLTAGE_MAX_MV (2.237000000e+02f)
 #define CB_FREQUENCY_MIN_KHZ (1.000000000e+01f)
 #define CB_FREQUENCY_MAX_KHZ (5.000000000e+02f)
-#define CB_GAIN_KNOT_COUNT (7u)
+#define CB_VOLTAGE_SCALE_MV (2.237000000e+02f)
+#define CB_GAIN_KNOT_COUNT (11u)
+#define CB_AMPLITUDE_CUBIC (8.731524980e-03f)
+#define CB_AMPLITUDE_QUINTIC (-7.059006573e-03f)
 
 static const float CB_FREQUENCY_KNOTS_KHZ[CB_GAIN_KNOT_COUNT] = {
-    1.000000000e+01f, 5.000000000e+01f, 1.000000000e+02f, 2.000000000e+02f, 3.000000000e+02f, 4.000000000e+02f, 5.000000000e+02f
+    1.000000000e+01f, 5.000000000e+01f, 1.000000000e+02f, 1.500000000e+02f, 2.000000000e+02f, 2.500000000e+02f, 3.000000000e+02f, 3.500000000e+02f, 4.000000000e+02f, 4.500000000e+02f, 5.000000000e+02f
 };
 static const float CB_GAIN_KNOTS[CB_GAIN_KNOT_COUNT] = {
-    1.124280255e+00f, 1.119371013e+00f, 1.113909770e+00f, 1.135043035e+00f, 1.135075191e+00f, 1.124366549e+00f, 1.112324084e+00f
+    1.126374237e+00f, 1.121635492e+00f, 1.115918491e+00f, 1.134152455e+00f, 1.136755701e+00f, 1.138114705e+00f, 1.137063499e+00f, 1.133487491e+00f, 1.127361753e+00f, 1.120261915e+00f, 1.116261863e+00f
 };
 
 static inline bool cb_calibration_in_range(float vpp_mv, float frequency_khz)
@@ -44,10 +46,8 @@ static inline float cb_interpolated_gain(float frequency_khz)
     }
     for (i = 1u; i < CB_GAIN_KNOT_COUNT; ++i) {
         if (frequency_khz <= CB_FREQUENCY_KNOTS_KHZ[i]) {
-            const float span = CB_FREQUENCY_KNOTS_KHZ[i] -
-                               CB_FREQUENCY_KNOTS_KHZ[i - 1u];
-            const float alpha = (frequency_khz -
-                                 CB_FREQUENCY_KNOTS_KHZ[i - 1u]) / span;
+            const float alpha = (frequency_khz - CB_FREQUENCY_KNOTS_KHZ[i - 1u]) /
+                                (CB_FREQUENCY_KNOTS_KHZ[i] - CB_FREQUENCY_KNOTS_KHZ[i - 1u]);
             return CB_GAIN_KNOTS[i - 1u] +
                    alpha * (CB_GAIN_KNOTS[i] - CB_GAIN_KNOTS[i - 1u]);
         }
@@ -57,16 +57,22 @@ static inline float cb_interpolated_gain(float frequency_khz)
 
 static inline float cb_calibrate_vpp_mv(float vpp_mv, float frequency_khz)
 {
-    return vpp_mv * cb_interpolated_gain(frequency_khz);
+    const float z = vpp_mv / CB_VOLTAGE_SCALE_MV;
+    const float z2 = z * z;
+    const float gain = cb_interpolated_gain(frequency_khz) +
+                       CB_AMPLITUDE_CUBIC * z2 +
+                       CB_AMPLITUDE_QUINTIC * z2 * z2;
+    return vpp_mv * gain;
 }
 
-/*
- * 该等效瞬时值形式只校正幅度增益。
- * 校准表没有验证相位、直流偏置或逐采样点波形失真。
- */
 static inline float cb_calibrate_sample_mv(float vin_mv, float frequency_khz)
 {
-    return vin_mv * cb_interpolated_gain(frequency_khz);
+    const float q = (2.0f * vin_mv) / CB_VOLTAGE_SCALE_MV;
+    const float q2 = q * q;
+    const float gain = cb_interpolated_gain(frequency_khz) +
+                       CB_AMPLITUDE_CUBIC * q2 +
+                       CB_AMPLITUDE_QUINTIC * q2 * q2;
+    return vin_mv * gain;
 }
 
 #endif /* CB_CALIBRATION_MODEL_H */

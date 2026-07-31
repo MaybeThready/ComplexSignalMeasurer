@@ -1,15 +1,16 @@
 #include "ti_msp_dl_config.h"
 #include "bsp/msp_sys.h"
-// #include "bsp/oled/oled.h"
-// #include "bsp/keyboard.h"
+#include "bsp/oled/oled.h"
+#include "bsp/keyboard.h"
 #include "bsp/uart.h"
-// #include "ui_config.h"
+#include "ui_config.h"
 #include "signal.h"
 #include "tjc.h"
 #include <stdio.h>
 
 #define UART_TIMEOUT_TICK (1000)  // ms
 #define UART_REFRESH_INTERVAL_TICK (100)
+#define UI_UPDATE_INTERVAL (100)
 
 uint16_t adc_buffer[2][N_SAMPLES] = { 0 };
 uint8_t dma_buffer_idx = 0;
@@ -21,6 +22,10 @@ uint8_t uart_update_stage = 0;  // 0-处理简单事件并发送数据；1-等�
 bool is_wave_mode = true;
 uint8_t period_cnt = 1;
 uint32_t start_sys_tick = 0;
+
+uint32_t start_ui_tick = 0;
+
+bool is_calibrate = false;
 
 static void reset_dma()
 {
@@ -74,6 +79,7 @@ void uart_update()
         if (is_wave_mode)
         {
             // signal_generate_wave(period_cnt);
+            signal_generate_wave(period_cnt);
             snprintf(buffer, 40, "main.t2.txt=\"%.3fmV\"", signal_vpp);
             tjc_send_string(buffer);
 
@@ -146,7 +152,6 @@ void uart_update()
 
             if (is_wave_mode)
             {
-                signal_generate_wave(period_cnt);
                 tjc_send_bytes(signal_uart_wave, 800);
             }
             else
@@ -190,10 +195,10 @@ int main()
 {
     SYSCFG_DL_init();
     init_sys();
-    // init_oled();
-    // init_keyboard();
+    init_oled();
+    init_keyboard();
     init_uart();
-    // init_app_ui();
+    init_app_ui();
 
     uart_recieve_callback = tjc_parse_uart;
 
@@ -206,17 +211,46 @@ int main()
     init_signal();
 
     start_sys_tick = sys_tick;
-    
+
     while (1)
     {
-        if (dma_done)
+        keyboard_update();
+        if (keyboard_keys[3][2].signal_event == KEY_PRESS)
         {
-            dma_done = false;
-            int_dma_done();
+            is_calibrate = !is_calibrate;
+            if (is_calibrate)
+            {
+                NVIC_DisableIRQ(ADC_SPI_INST_INT_IRQN);
+                NVIC_DisableIRQ(TJC_UART_INST_INT_IRQN);
+            }
+            else
+            {
+                DL_SPI_clearInterruptStatus(
+                    ADC_SPI_INST, DL_SPI_INTERRUPT_DMA_DONE_RX);
+                NVIC_ClearPendingIRQ(ADC_SPI_INST_INT_IRQN);
+                reset_dma();
+                NVIC_EnableIRQ(ADC_SPI_INST_INT_IRQN);
+                NVIC_EnableIRQ(TJC_UART_INST_INT_IRQN);
+                start_sys_tick = sys_tick;
+            }
         }
-        uart_update();
-        // keyboard_update();
-        // app_ui_update();
+
+        if (is_calibrate)
+        {
+            
+            app_ui_update();
+        }
+        else
+        {
+            if (dma_done)
+            {
+                // NVIC_DisableIRQ(ADC_SPI_INST_INT_IRQN);
+                dma_done = false;
+                int_dma_done();
+                // NVIC_EnableIRQ(ADC_SPI_INST_INT_IRQN);
+            }
+            uart_update();
+        }
     }
 
     return 0;
@@ -227,7 +261,9 @@ void ADC_SPI_INST_IRQHandler()
     switch (DL_SPI_getPendingInterrupt(ADC_SPI_INST))
     {
     case DL_SPI_IIDX_DMA_DONE_RX:
+        // dma_buffer_idx = 1 - dma_buffer_idx;
         dma_done = true;
+        // reset_dma();
         break;
 
     default:

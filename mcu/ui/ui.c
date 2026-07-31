@@ -300,7 +300,9 @@ void ui_keys_use_default_4x4(UIKeys *keys)
     keys->back = &keyboard_keys[0][3];     /* A */
     keys->scroll_up = &keyboard_keys[1][3];   /* B */
     keys->scroll_down = &keyboard_keys[2][3]; /* C */
-    keys->start_number_input = &keyboard_keys[3][2]; /* # */
+    /* Number editors enter direct-input mode automatically.  Leave # free for
+       application-level mode switching. */
+    keys->start_number_input = NULL;
     keys->decimal = &keyboard_keys[3][0];  /* * */
     for (digit = 1U; digit <= 9U; ++digit) {
         uint8_t index = digit - 1U;
@@ -437,7 +439,9 @@ static void open_editor(UIApp *ui, UIItem *item)
     ui->popup_width = 0.0f;
     ui->popup_height = 0.0f;
     ui->choice_slide = 0.0f;
-    ui->number_typing = false;
+    /* Direct digit input is the default for number editors, so no dedicated
+       mode-switch key is needed. */
+    ui->number_typing = item->type == UI_ITEM_NUMBER;
     ui->number_input_length = 0U;
     ui->number_input[0] = '\0';
 }
