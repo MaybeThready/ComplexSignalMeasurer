@@ -1,38 +1,37 @@
-# General-EDC-Template
+# 信号测量仪
 
-通用电子设计竞赛软件开发模板，面向电子设计竞赛类项目，硬件支持 Cyclone IV FPGA 与 MSPM0G3519 MCU。
+基于 FPGA 与 MSPM0 的信号采集、分析和显示项目。
 
-## 项目简介
+FPGA 完成 ADC 数据采集、FIR 滤波与抽取，并通过 SPI 将采样数据发送给 MCU；MSPM0 对数据进行 FFT 分析，计算信号频率、幅值、峰峰值和有效值，并在 OLED 及串口屏上显示波形和频谱。
 
-- 目标: 提供软硬件协同开发的基础工程与目录结构，便于快速落地赛题需求。
-- 硬件支持: Cyclone IV FPGA 与 MSPM0G3519。
-- 代码范围: FPGA 工程、MCU 工程、板级支持与 UI 配置。
+## 主要功能
+
+- ADC 信号采集与 FIR 数字滤波
+- 2048 点 FFT 频谱分析
+- 测量频率、幅值、峰峰值和有效值
+- 识别基波及主要谐波
+- OLED 菜单与串口屏波形/频谱显示
+- 支持测量结果校准
 
 ## 目录结构
 
-- fpga/: Quartus 工程与输出产物
-  - src/: FPGA 源码
-  - output_files/: 编译输出文件
-  - simulation/: 仿真相关文件
-- mcu/: MCU 工程
-  - main.c: 主程序入口
-  - ti_msp_dl_config.c/h: DriverLib 配置
-  - ui_config.h: UI/交互配置
-  - bsp/: 板级支持
-  - ui/: UI 相关实现
+```text
+.
+├── fpga/              # FPGA 工程（Quartus）
+│   └── src/           # Verilog 源码
+├── mcu/               # MSPM0 固件
+│   ├── bsp/           # 板级驱动
+│   ├── ui/            # OLED UI
+│   └── keil/          # Keil 工程
+├── usart_sig/         # 串口屏工程与资源
+└── fir*_coef.txt      # FIR 滤波器系数
+```
 
-## 环境与工具链
+## 开发环境
 
-- FPGA: Intel Quartus (Cyclone IV 系列支持)
-- MCU: TI MSPM0 SDK (MSPM0G3519)
-- 其他: 需配套的下载器与驱动
+- FPGA：Cyclone IV E（EP4CE6F17C8），Quartus Prime
+- MCU：TI MSPM0G3519，Keil MDK + MSPM0 SDK 2.08
+- MCU 工程：`mcu/keil/Demo.uvprojx`
+- FPGA 工程：`fpga/main.qpf`
 
-## 快速开始
-
-1. 打开 FPGA 工程
- - 使用 Quartus 打开 [fpga/main.qpf](fpga/main.qpf)。
-2. 打开 MCU 工程
- - 使用对应 IDE 或构建系统打开 [mcu/main.c](mcu/main.c) 所在工程。
-3. 配置与编译
- - 根据硬件连接修改引脚/外设配置。
- - 分别编译 FPGA 与 MCU 工程，完成下载与联调。
+分别使用 Keil 和 Quartus 打开对应工程，编译后下载到 MCU 与 FPGA 即可。

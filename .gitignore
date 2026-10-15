@@ -25,7 +25,9 @@ fpga/incremental_db
 fpga/output_files
 fpga/simulation
 
-usart_sig/
 cb_output/
 *.xlsx
 **/__pycache__
+python/
+report/
+graph/
